@@ -2,7 +2,7 @@ package ru.prog.itmo;
 
 import ru.prog.itmo.spacemarine.SpaceMarine;
 
-import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashSet;
 
 public class Storage {
@@ -27,8 +27,8 @@ public class Storage {
     }
 
     public SpaceMarine[] sort() {
-        SpaceMarine[] array = hashSet.toArray(new SpaceMarine[hashSet.size()]);
-        //sort
+        SpaceMarine[] array = hashSet.toArray(new SpaceMarine[0]);
+        Arrays.sort(array);
         return array;
     }
 }
