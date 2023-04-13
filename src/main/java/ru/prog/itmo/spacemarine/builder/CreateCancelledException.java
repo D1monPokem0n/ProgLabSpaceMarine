@@ -1,19 +1,11 @@
 package ru.prog.itmo.spacemarine.builder;
 
 
-public class CreateCancelledException extends Exception {
-    private final String message;
-
+public class CreateCancelledException extends RuntimeException {
     public CreateCancelledException() {
-        message = "Создание космодесантника отменено.";
+        super("Создание космодесантника отменено.");
     }
 
     public CreateCancelledException(String message) {
-        this.message = message;
+        super(message);}
     }
-
-    @Override
-    public String getMessage() {
-        return message;
-    }
-}

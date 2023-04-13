@@ -1,6 +1,6 @@
 package ru.prog.itmo.command;
 
-import ru.prog.itmo.Storage;
+import ru.prog.itmo.storage.Storage;
 
 public abstract class StorageCommand implements Command {
     private Storage storage;
@@ -11,7 +11,6 @@ public abstract class StorageCommand implements Command {
 
     @Override
     public void execute() {
-        System.out.println("This command is " + getClass());
     }
 
     public Storage getStorage() {

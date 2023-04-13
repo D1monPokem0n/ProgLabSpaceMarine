@@ -1,6 +1,6 @@
 package ru.prog.itmo.command;
 
-import ru.prog.itmo.ProgramState;
+import ru.prog.itmo.control.ProgramState;
 
 public class ExitCommand extends ConsoleCommand {
     private final ProgramState programState;

@@ -10,7 +10,24 @@ public enum MeleeWeapon {
         this.name = name;
     }
 
-    String getName() {
+    public String getName() {
         return this.name;
+    }
+
+    public static MeleeWeapon getMeleeWeapon(String weaponName) throws IllegalArgumentException{
+        switch (weaponName){
+            case "Manreaper" -> {
+                return MANREAPER;
+            }
+            case "Lighting claw" -> {
+                return LIGHTING_CLAW;
+            }
+            case "Power fist" -> {
+                return POWER_FIST;
+            }
+            default -> {
+                throw new IllegalArgumentException();
+            }
+        }
     }
 }

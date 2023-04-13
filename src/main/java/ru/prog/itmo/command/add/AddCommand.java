@@ -1,27 +1,29 @@
 package ru.prog.itmo.command.add;
 
-import ru.prog.itmo.Storage;
-import ru.prog.itmo.command.StorageCommand;
+import ru.prog.itmo.command.StorageIOCommand;
+import ru.prog.itmo.command.UserAsking;
+import ru.prog.itmo.reader.SpaceMarineReader;
 import ru.prog.itmo.spacemarine.SpaceMarine;
 import ru.prog.itmo.spacemarine.builder.CreateCancelledException;
-import ru.prog.itmo.speaker.ConsoleSpeaker;
+import ru.prog.itmo.spacemarine.builder.user.SpaceMarineUserCreator;
 import ru.prog.itmo.speaker.Speaker;
+import ru.prog.itmo.storage.Storage;
 
-public class AddCommand extends StorageCommand {
-    public AddCommand(Storage storage) {
-        super(storage);
+public class AddCommand extends StorageIOCommand implements UserAsking {
+    public AddCommand(Storage storage, Speaker speaker, SpaceMarineReader reader) {
+        super(storage, speaker, reader);
     }
 
     @Override
     public void execute() {
         super.execute();
-        SpaceMarineAddCreator creator = new SpaceMarineAddCreator();
+        SpaceMarineUserCreator creator = new SpaceMarineUserCreator(getSpeaker(), getReader());
         try {
             SpaceMarine marine = creator.create();
             getStorage().add(marine);
+            getSpeaker().speak("Вы успешно добавили десантника:\n"+marine);
         } catch (CreateCancelledException e) {
-            Speaker speaker = new ConsoleSpeaker();
-            speaker.speak(e.getMessage());
+            getSpeaker().speak(e.getMessage());
         }
     }
 
