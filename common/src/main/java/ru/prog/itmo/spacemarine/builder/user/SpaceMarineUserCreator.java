@@ -6,7 +6,6 @@ import ru.prog.itmo.spacemarine.builder.InvalidSpaceMarineValueException;
 import ru.prog.itmo.spacemarine.builder.SpaceMarineBuilder;
 import ru.prog.itmo.spacemarine.builder.SpaceMarineCheckSettable;
 import ru.prog.itmo.spacemarine.builder.SpaceMarineCreator;
-import ru.prog.itmo.spacemarine.builder.user.SpaceMarineUserBuilder;
 import ru.prog.itmo.speaker.Speaker;
 
 import java.util.ArrayList;
