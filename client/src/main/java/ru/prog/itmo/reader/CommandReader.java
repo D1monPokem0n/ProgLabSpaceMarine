@@ -5,9 +5,9 @@ import ru.prog.itmo.control.ConsoleArgument;
 import java.util.regex.Pattern;
 
 public class CommandReader {
-    private SpaceMarineReader reader;
+    private Reader reader;
     private ConsoleArgument consoleArgument;
-    private final String FORMAT = ("(help|info|show|add(_if_min)?|update|remove_by_id|clear|save|execute_script|exit|remove(_greater|_any_by_chapter)|history|max_by_melee_weapon|print_field_descending_health)");
+    private final String FORMAT = ("(help|info|show|add(_if_min)?|update|remove_by_id|clear|execute_script|exit|remove(_greater|_any_by_chapter)|history|max_by_melee_weapon|print_field_descending_health)");
     public String read() throws InvalidCommandException {
         String value = reader.read();
         if (value == null)
@@ -20,7 +20,7 @@ public class CommandReader {
         consoleArgument.setArgument(argument);
         return command;
     }
-    public CommandReader(SpaceMarineReader reader, ConsoleArgument consoleArgument){
+    public CommandReader(Reader reader, ConsoleArgument consoleArgument){
         this.reader = reader;
         this.consoleArgument = consoleArgument;
     }

@@ -1,8 +1,7 @@
 package ru.prog.itmo.storage;
 
+import ru.prog.itmo.StorageInfo;
 import ru.prog.itmo.spacemarine.SpaceMarine;
-import ru.prog.itmo.speaker.ConsoleSpeaker;
-import ru.prog.itmo.speaker.Speaker;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -36,14 +35,10 @@ public class Storage {
         return hashSet;
     }
 
-    public void add(SpaceMarine spaceMarine) {
-        if (!hashSet.contains(spaceMarine)) {
-            hashSet.add(spaceMarine);
-            info.incrementElementsCount();
-        } else {
-            Speaker speaker = new ConsoleSpeaker();
-            speaker.speak("Такой десантник уже существует");
-        }
+    public boolean add(SpaceMarine spaceMarine) {
+        hashSet.add(spaceMarine);
+        info.incrementElementsCount();
+        return hashSet.contains(spaceMarine);
     }
 
     public StorageInfo getInfo() {
@@ -61,7 +56,7 @@ public class Storage {
         hashSet.removeAll(col);
     }
 
-    public void clear(){
+    public void clear() {
         info.reduceElementsCount(hashSet.size());
         hashSet.clear();
     }
@@ -75,7 +70,8 @@ public class Storage {
         if (haveDeleted) info.reduceElementsCount(1);
         return haveDeleted;
     }
-    public SpaceMarine getById(long id){
+
+    public SpaceMarine getById(long id) {
         SpaceMarine searchableMarine = null;
         for (SpaceMarine marine : hashSet) {
             if (marine.getId() == id) {
