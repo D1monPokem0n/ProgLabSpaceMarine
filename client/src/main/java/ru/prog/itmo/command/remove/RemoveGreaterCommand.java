@@ -5,8 +5,8 @@ import ru.prog.itmo.command.UserAsking;
 import ru.prog.itmo.connection.Request;
 import ru.prog.itmo.connection.Response;
 import ru.prog.itmo.reader.Reader;
-import ru.prog.itmo.server.ConnectionModule;
-import ru.prog.itmo.server.InvalidConnectionException;
+import ru.prog.itmo.connection.ConnectionModule;
+import ru.prog.itmo.connection.InvalidConnectionException;
 import ru.prog.itmo.spacemarine.SpaceMarine;
 import ru.prog.itmo.spacemarine.CreateCancelledException;
 import ru.prog.itmo.spacemarine.builder.user.SpaceMarineUserCreator;
@@ -35,7 +35,9 @@ public class RemoveGreaterCommand extends ServerIOCommand implements UserAsking 
             ObjectInputStream inputStream = getDeserializedInputStream(fromServer);
             @SuppressWarnings("unchecked")
             Response<String> response = (Response<String>) inputStream.readObject();
-            speaker().speak(response.getData());
+            if (response.getData() != null)
+                speaker().speak(response.getData());
+            else speaker().speak(response.getComment());
         } catch (CreateCancelledException e) {
             speaker().speak("Вам не удалось задать максимального десантника. \nУдаление отменено.");
         } catch (IOException | ClassNotFoundException | InvalidConnectionException e){

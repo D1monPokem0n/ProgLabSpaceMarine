@@ -4,8 +4,8 @@ import ru.prog.itmo.command.ServerOCommand;
 import ru.prog.itmo.command.UserAsking;
 import ru.prog.itmo.connection.Request;
 import ru.prog.itmo.connection.Response;
-import ru.prog.itmo.server.ConnectionModule;
-import ru.prog.itmo.server.InvalidConnectionException;
+import ru.prog.itmo.connection.ConnectionModule;
+import ru.prog.itmo.connection.InvalidConnectionException;
 import ru.prog.itmo.spacemarine.SpaceMarine;
 import ru.prog.itmo.speaker.Speaker;
 
@@ -35,7 +35,11 @@ public class MaxByMeleeWeaponCommand extends ServerOCommand implements UserAskin
             ObjectInputStream inputStream = getDeserializedInputStream(fromServer);
             @SuppressWarnings("unchecked")
             Response<SpaceMarine> response = (Response<SpaceMarine>) inputStream.readObject();
-            speaker().speak("Минимальный десантник в коллекции:\n"+response.getData());
+            if (response.getData() != null) {
+                speaker().speak("Минимальный десантник в коллекции:\n" + response.getData());
+            } else {
+                speaker().speak(response.getComment());
+            }
         } catch (IOException | ClassNotFoundException | InvalidConnectionException e){
             speaker().speak("Проблемы с соединением...");
         }

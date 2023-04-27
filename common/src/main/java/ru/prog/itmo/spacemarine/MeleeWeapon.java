@@ -14,6 +14,10 @@ public enum MeleeWeapon {
         return this.name;
     }
 
+    public static MeleeWeapon getMaxWeapon(){
+        return MANREAPER;
+    }
+
     public static MeleeWeapon getMeleeWeapon(String weaponName) throws IllegalArgumentException{
         switch (weaponName){
             case "Manreaper" -> {

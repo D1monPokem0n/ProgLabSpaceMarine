@@ -6,5 +6,5 @@ public class EndOfScriptException extends RuntimeException{
     }
     public EndOfScriptException(){
         super();
-    };
+    }
 }

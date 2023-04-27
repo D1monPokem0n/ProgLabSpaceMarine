@@ -2,7 +2,7 @@ package ru.prog.itmo.command.add;
 
 import ru.prog.itmo.command.ScriptExecutable;
 import ru.prog.itmo.reader.Reader;
-import ru.prog.itmo.server.ConnectionModule;
+import ru.prog.itmo.connection.ConnectionModule;
 import ru.prog.itmo.speaker.Speaker;
 
 public class AddScriptCommand extends AbstractAddScriptCommand implements ScriptExecutable {

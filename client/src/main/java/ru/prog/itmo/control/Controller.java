@@ -1,12 +1,11 @@
 package ru.prog.itmo.control;
 
 import ru.prog.itmo.command.Command;
-import ru.prog.itmo.reader.CommandReader;
 import ru.prog.itmo.reader.ConsoleReader;
 import ru.prog.itmo.reader.InvalidCommandException;
 import ru.prog.itmo.reader.Reader;
-import ru.prog.itmo.server.ConnectionModule;
-import ru.prog.itmo.server.InvalidConnectionException;
+import ru.prog.itmo.connection.ConnectionModule;
+import ru.prog.itmo.connection.InvalidConnectionException;
 import ru.prog.itmo.speaker.ConsoleSpeaker;
 import ru.prog.itmo.speaker.Speaker;
 
@@ -33,6 +32,7 @@ public class Controller {
             commandMap = new CommandMap(connectionModule, clientState, argument, lastCommands, speaker, reader);
         } catch (InvalidConnectionException e){
             speaker.speak(e.getMessage());
+            clientState.setWorkStatus(false);
         }
     }
 

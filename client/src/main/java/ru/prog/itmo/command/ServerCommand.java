@@ -1,13 +1,13 @@
 package ru.prog.itmo.command;
 
-import ru.prog.itmo.command.script.InvalidScriptException;
+import ru.prog.itmo.spacemarine.builder.script.InvalidScriptException;
 import ru.prog.itmo.connection.Request;
-import ru.prog.itmo.server.ConnectionModule;
+import ru.prog.itmo.connection.ConnectionModule;
 
 import java.io.*;
 import java.nio.ByteBuffer;
 
-public abstract class ServerCommand extends AbstractCommand {
+public abstract class ServerCommand extends AbstractClientCommand {
     private ConnectionModule connectionModule;
 
     public ServerCommand(String commandType, ConnectionModule connectionModule) {

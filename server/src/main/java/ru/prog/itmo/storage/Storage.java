@@ -7,6 +7,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Objects;
+import java.util.stream.Stream;
 
 public class Storage {
     private final HashSet<SpaceMarine> hashSet;
@@ -40,9 +41,15 @@ public class Storage {
         info.incrementElementsCount();
         return hashSet.contains(spaceMarine);
     }
+    public boolean contains(SpaceMarine marine){
+        return hashSet.contains(marine);
+    }
 
     public StorageInfo getInfo() {
         return info;
+    }
+    public Stream<SpaceMarine> getStream(){
+        return hashSet.stream();
     }
 
     public SpaceMarine[] sort() {

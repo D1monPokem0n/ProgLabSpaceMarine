@@ -17,7 +17,7 @@ import ru.prog.itmo.command.script.ExecuteScriptCommand;
 import ru.prog.itmo.command.update.UpdateCommand;
 import ru.prog.itmo.command.update.UpdateScriptCommand;
 import ru.prog.itmo.reader.Reader;
-import ru.prog.itmo.server.ConnectionModule;
+import ru.prog.itmo.connection.ConnectionModule;
 import ru.prog.itmo.speaker.Speaker;
 
 import java.util.HashMap;

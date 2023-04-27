@@ -5,8 +5,8 @@ import ru.prog.itmo.command.UserAsking;
 import ru.prog.itmo.connection.Request;
 import ru.prog.itmo.connection.Response;
 import ru.prog.itmo.reader.Reader;
-import ru.prog.itmo.server.ConnectionModule;
-import ru.prog.itmo.server.InvalidConnectionException;
+import ru.prog.itmo.connection.ConnectionModule;
+import ru.prog.itmo.connection.InvalidConnectionException;
 import ru.prog.itmo.speaker.Speaker;
 
 import java.io.IOException;

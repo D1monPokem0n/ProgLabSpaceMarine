@@ -1,16 +1,17 @@
 package ru.prog.itmo.command.filter;
 
 import ru.prog.itmo.command.ServerIOCommand;
+import ru.prog.itmo.connection.ConnectionModule;
+import ru.prog.itmo.connection.InvalidConnectionException;
 import ru.prog.itmo.connection.Request;
+import ru.prog.itmo.connection.Response;
 import ru.prog.itmo.reader.Reader;
-import ru.prog.itmo.server.ConnectionModule;
-import ru.prog.itmo.server.InvalidConnectionException;
 import ru.prog.itmo.speaker.Speaker;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.nio.ByteBuffer;
-import java.util.Collection;
+import java.util.ArrayList;
 
 public class PrintFieldDescendingHealthCommand extends ServerIOCommand {
     public PrintFieldDescendingHealthCommand(ConnectionModule connectionModule, Speaker speaker, Reader reader) {
@@ -32,11 +33,14 @@ public class PrintFieldDescendingHealthCommand extends ServerIOCommand {
             ByteBuffer fromServer = connectionModule().receiveResponse();
             ObjectInputStream stream = getDeserializedInputStream(fromServer);
             @SuppressWarnings("unchecked")
-            Collection<String> collection = (Collection<String>) stream.readObject();
-            for (String output: collection){
-                speaker().speak(output);
-            }
-        } catch (IOException | ClassNotFoundException | InvalidConnectionException e){
+            Response<ArrayList<String>> response = (Response<ArrayList<String>>) stream.readObject();
+            ArrayList<String> collection = response.getData();
+            if (collection.size() != 0)
+                for (String output : collection) {
+                    speaker().speak(output);
+                }
+            else speaker().speak(response.getComment());
+        } catch (IOException | ClassNotFoundException | InvalidConnectionException e) {
             speaker().speak("Проблемы с соединением...");
         }
     }

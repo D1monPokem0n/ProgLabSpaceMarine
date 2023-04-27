@@ -1,7 +1,7 @@
 package ru.prog.itmo.command;
 
 import ru.prog.itmo.reader.Reader;
-import ru.prog.itmo.server.ConnectionModule;
+import ru.prog.itmo.connection.ConnectionModule;
 import ru.prog.itmo.speaker.Speaker;
 
 public abstract class ServerIOCommand extends ServerOCommand {

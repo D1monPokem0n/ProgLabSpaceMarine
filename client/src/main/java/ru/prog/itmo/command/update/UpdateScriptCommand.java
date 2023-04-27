@@ -2,13 +2,13 @@ package ru.prog.itmo.command.update;
 
 import ru.prog.itmo.command.ScriptExecutable;
 import ru.prog.itmo.command.ServerIOCommand;
-import ru.prog.itmo.command.script.InvalidScriptException;
+import ru.prog.itmo.spacemarine.builder.script.InvalidScriptException;
 import ru.prog.itmo.connection.Request;
 import ru.prog.itmo.connection.Response;
 import ru.prog.itmo.control.ConsoleArgument;
 import ru.prog.itmo.reader.Reader;
-import ru.prog.itmo.server.ConnectionModule;
-import ru.prog.itmo.server.InvalidConnectionException;
+import ru.prog.itmo.connection.ConnectionModule;
+import ru.prog.itmo.connection.InvalidConnectionException;
 import ru.prog.itmo.spacemarine.AstartesCategory;
 import ru.prog.itmo.spacemarine.MeleeWeapon;
 import ru.prog.itmo.spacemarine.SpaceMarine;

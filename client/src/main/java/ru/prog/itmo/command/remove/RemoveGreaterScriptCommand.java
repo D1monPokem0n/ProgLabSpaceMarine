@@ -2,12 +2,12 @@ package ru.prog.itmo.command.remove;
 
 import ru.prog.itmo.command.ScriptExecutable;
 import ru.prog.itmo.command.ServerIOCommand;
-import ru.prog.itmo.command.script.InvalidScriptException;
+import ru.prog.itmo.spacemarine.builder.script.InvalidScriptException;
 import ru.prog.itmo.connection.Request;
 import ru.prog.itmo.connection.Response;
 import ru.prog.itmo.reader.Reader;
-import ru.prog.itmo.server.ConnectionModule;
-import ru.prog.itmo.server.InvalidConnectionException;
+import ru.prog.itmo.connection.ConnectionModule;
+import ru.prog.itmo.connection.InvalidConnectionException;
 import ru.prog.itmo.spacemarine.SpaceMarine;
 import ru.prog.itmo.spacemarine.builder.script.SpaceMarineScriptCreator;
 import ru.prog.itmo.speaker.Speaker;
@@ -34,7 +34,9 @@ public class RemoveGreaterScriptCommand extends ServerIOCommand implements Scrip
             ObjectInputStream inputStream = getDeserializedInputStream(fromServer);
             @SuppressWarnings("unchecked")
             Response<String> response = (Response<String>) inputStream.readObject();
-            speaker().speak(response.getData());
+            if (response.getData() != null)
+                speaker().speak(response.getData());
+            else speaker().speak(response.getComment());
         } catch (NullPointerException e){
             speaker().speak("В коллекции нет десантников, выше заданного Вами.");
         } catch (IOException | ClassNotFoundException | InvalidConnectionException e){

@@ -6,8 +6,8 @@ import ru.prog.itmo.connection.Request;
 import ru.prog.itmo.connection.Response;
 import ru.prog.itmo.control.ConsoleArgument;
 import ru.prog.itmo.reader.Reader;
-import ru.prog.itmo.server.ConnectionModule;
-import ru.prog.itmo.server.InvalidConnectionException;
+import ru.prog.itmo.connection.ConnectionModule;
+import ru.prog.itmo.connection.InvalidConnectionException;
 import ru.prog.itmo.spacemarine.AstartesCategory;
 import ru.prog.itmo.spacemarine.MeleeWeapon;
 import ru.prog.itmo.spacemarine.SpaceMarine;
@@ -59,7 +59,7 @@ public class UpdateCommand extends ServerIOCommand implements UserAsking {
             Response<SpaceMarine> response1 = (Response<SpaceMarine>) inputStream1.readObject();
             SpaceMarine searchableMarine = response1.getData();
             if (searchableMarine == null)
-                throw new InvalidSpaceMarineValueException("Морпеха с данным id не существует.");
+                throw new InvalidSpaceMarineValueException(response1.getComment());
             SpaceMarine TMPMarine = SpaceMarine.getTMPSpaceMarine();
             TMPMarine.setAllFields(searchableMarine);
             speaker().speak("Вы начали обновлять значения полей у данного морпеха:\n\n" +

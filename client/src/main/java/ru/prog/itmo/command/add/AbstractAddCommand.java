@@ -4,8 +4,8 @@ import ru.prog.itmo.command.ServerIOCommand;
 import ru.prog.itmo.connection.Request;
 import ru.prog.itmo.connection.Response;
 import ru.prog.itmo.reader.Reader;
-import ru.prog.itmo.server.ConnectionModule;
-import ru.prog.itmo.server.InvalidConnectionException;
+import ru.prog.itmo.connection.ConnectionModule;
+import ru.prog.itmo.connection.InvalidConnectionException;
 import ru.prog.itmo.spacemarine.SpaceMarine;
 import ru.prog.itmo.spacemarine.CreateCancelledException;
 import ru.prog.itmo.spacemarine.builder.user.SpaceMarineUserCreator;
@@ -33,7 +33,9 @@ public abstract class AbstractAddCommand extends ServerIOCommand {
             ObjectInputStream ois = getDeserializedInputStream(fromServer);
             @SuppressWarnings("unchecked")
             Response<String> response = (Response<String>) ois.readObject();
-            speaker().speak(response.getData());
+            if (response.getData() != null)
+                speaker().speak(response.getData());
+            else throw new InvalidConnectionException(response.getComment());
         } catch (CreateCancelledException | InvalidConnectionException | ClassNotFoundException | IOException e) {
             speaker().speak("Проблемы с соединением...");
         }

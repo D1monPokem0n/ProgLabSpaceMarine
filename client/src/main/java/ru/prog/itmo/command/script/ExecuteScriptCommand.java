@@ -8,8 +8,9 @@ import ru.prog.itmo.control.ConsoleArgument;
 import ru.prog.itmo.control.Controller;
 import ru.prog.itmo.reader.InvalidCommandException;
 import ru.prog.itmo.reader.Reader;
-import ru.prog.itmo.reader.ScriptReader;
-import ru.prog.itmo.server.ConnectionModule;
+import ru.prog.itmo.control.ScriptReader;
+import ru.prog.itmo.connection.ConnectionModule;
+import ru.prog.itmo.spacemarine.builder.script.InvalidScriptException;
 import ru.prog.itmo.speaker.Speaker;
 
 import java.io.FileInputStream;

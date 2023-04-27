@@ -1,12 +1,12 @@
 package ru.prog.itmo.command.add;
 
 import ru.prog.itmo.command.ServerIOCommand;
-import ru.prog.itmo.command.script.InvalidScriptException;
+import ru.prog.itmo.spacemarine.builder.script.InvalidScriptException;
 import ru.prog.itmo.connection.Request;
 import ru.prog.itmo.connection.Response;
 import ru.prog.itmo.reader.Reader;
-import ru.prog.itmo.server.ConnectionModule;
-import ru.prog.itmo.server.InvalidConnectionException;
+import ru.prog.itmo.connection.ConnectionModule;
+import ru.prog.itmo.connection.InvalidConnectionException;
 import ru.prog.itmo.spacemarine.SpaceMarine;
 import ru.prog.itmo.spacemarine.CreateCancelledException;
 import ru.prog.itmo.spacemarine.builder.script.SpaceMarineScriptCreator;
@@ -34,9 +34,13 @@ public abstract class AbstractAddScriptCommand extends ServerIOCommand {
             ObjectInputStream ois = getDeserializedInputStream(fromServer);
             @SuppressWarnings("unchecked")
             Response<String> response = (Response<String>) ois.readObject();
-            speaker().speak(response.getData());
-        } catch (CreateCancelledException | IOException | InvalidConnectionException | ClassNotFoundException e) {
+            if (response.getData() != null)
+                speaker().speak(response.getData());
+            else throw new InvalidConnectionException(response.getComment());
+        } catch (CreateCancelledException | IOException | ClassNotFoundException e) {
             throw new InvalidScriptException("Проблемы с соединением...");
+        } catch (InvalidConnectionException e){
+            throw new InvalidScriptException(e.getMessage());
         }
     }
 }

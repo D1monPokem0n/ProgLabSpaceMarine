@@ -2,11 +2,11 @@ package ru.prog.itmo.command.remove;
 
 import ru.prog.itmo.command.ScriptExecutable;
 import ru.prog.itmo.command.ServerOCommand;
-import ru.prog.itmo.command.script.InvalidScriptException;
+import ru.prog.itmo.spacemarine.builder.script.InvalidScriptException;
 import ru.prog.itmo.connection.Request;
 import ru.prog.itmo.connection.Response;
-import ru.prog.itmo.server.ConnectionModule;
-import ru.prog.itmo.server.InvalidConnectionException;
+import ru.prog.itmo.connection.ConnectionModule;
+import ru.prog.itmo.connection.InvalidConnectionException;
 import ru.prog.itmo.speaker.Speaker;
 
 import java.io.IOException;
