@@ -12,7 +12,7 @@ public abstract class StorageIOCommand extends StorageOCommand {
         this.reader = reader;
     }
 
-    public void setReader(Reader reader) {
+    public void reader(Reader reader) {
         this.reader = reader;
     }
 

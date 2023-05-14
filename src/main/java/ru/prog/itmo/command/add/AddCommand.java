@@ -5,7 +5,7 @@ import ru.prog.itmo.command.UserAsking;
 import ru.prog.itmo.reader.SpaceMarineReader;
 import ru.prog.itmo.spacemarine.SpaceMarine;
 import ru.prog.itmo.spacemarine.builder.CreateCancelledException;
-import ru.prog.itmo.spacemarine.builder.user.SpaceMarineUserCreator;
+import ru.prog.itmo.spacemarine.builder.client.SpaceMarineClientCreator;
 import ru.prog.itmo.speaker.Speaker;
 import ru.prog.itmo.storage.Storage;
 
@@ -17,7 +17,7 @@ public class AddCommand extends StorageIOCommand implements UserAsking {
     @Override
     public void execute() {
         super.execute();
-        SpaceMarineUserCreator creator = new SpaceMarineUserCreator(getSpeaker(), getReader());
+        SpaceMarineClientCreator creator = new SpaceMarineClientCreator(getSpeaker(), getReader());
         try {
             SpaceMarine marine = creator.create();
             getStorage().add(marine);

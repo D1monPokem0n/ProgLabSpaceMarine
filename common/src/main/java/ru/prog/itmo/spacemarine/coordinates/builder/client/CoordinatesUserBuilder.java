@@ -1,4 +1,4 @@
-package ru.prog.itmo.spacemarine.coordinates.builder.user;
+package ru.prog.itmo.spacemarine.coordinates.builder.client;
 
 import ru.prog.itmo.spacemarine.CreateCancelledException;
 import ru.prog.itmo.spacemarine.InvalidSpaceMarineValueException;

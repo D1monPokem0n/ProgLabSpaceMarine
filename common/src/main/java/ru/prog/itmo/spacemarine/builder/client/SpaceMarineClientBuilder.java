@@ -1,11 +1,11 @@
-package ru.prog.itmo.spacemarine.builder.user;
+package ru.prog.itmo.spacemarine.builder.client;
 
 import ru.prog.itmo.spacemarine.CreateCancelledException;
 import ru.prog.itmo.spacemarine.InvalidSpaceMarineValueException;
 import ru.prog.itmo.spacemarine.builder.SpaceMarineBuilder;
 import ru.prog.itmo.spacemarine.chapter.builder.ChapterCreator;
-import ru.prog.itmo.spacemarine.chapter.builder.user.ChapterUserCreator;
-import ru.prog.itmo.spacemarine.coordinates.builder.user.CoordinatesUserCreator;
+import ru.prog.itmo.spacemarine.chapter.builder.client.ChapterClientCreator;
+import ru.prog.itmo.spacemarine.coordinates.builder.client.CoordinatesUserCreator;
 import ru.prog.itmo.reader.Reader;
 import ru.prog.itmo.spacemarine.AstartesCategory;
 import ru.prog.itmo.spacemarine.MeleeWeapon;
@@ -16,7 +16,7 @@ import ru.prog.itmo.speaker.Speaker;
 
 import static java.time.LocalDateTime.now;
 
-public class SpaceMarineUserBuilder implements SpaceMarineBuilder {
+public class SpaceMarineClientBuilder implements SpaceMarineBuilder {
     private long id; //Значение поля должно быть больше 0, Значение этого поля должно быть уникальным, Значение этого поля должно генерироваться автоматически
     private String name; //Поле не может быть null, Строка не может быть пустой
     private Coordinates coordinates; //Поле не может быть null
@@ -29,7 +29,7 @@ public class SpaceMarineUserBuilder implements SpaceMarineBuilder {
     private Reader reader;
     private Speaker speaker;
 
-    public SpaceMarineUserBuilder(Speaker speaker, Reader reader) {
+    public SpaceMarineClientBuilder(Speaker speaker, Reader reader) {
         this.reader = reader;
         this.speaker = speaker;
     }
@@ -137,7 +137,7 @@ public class SpaceMarineUserBuilder implements SpaceMarineBuilder {
         answer = answer == null ? "null" : answer;
         switch (answer) {
             case "Y", "y" -> {
-                ChapterCreator creator = new ChapterUserCreator(speaker, reader);
+                ChapterCreator creator = new ChapterClientCreator(speaker, reader);
                 chapter = creator.create();
                 return true;
             }

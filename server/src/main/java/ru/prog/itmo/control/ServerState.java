@@ -10,6 +10,9 @@ public class ServerState {
     }
     public void setWorkStatus(boolean workStatus) {
         this.workStatus = workStatus;
+        if (!workStatus){
+            System.exit(0);
+        }
     }
 
     public boolean isWorkStatus() {

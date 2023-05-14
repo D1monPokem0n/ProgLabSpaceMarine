@@ -7,7 +7,6 @@ import ru.prog.itmo.connection.Request;
 import ru.prog.itmo.connection.Response;
 import ru.prog.itmo.reader.Reader;
 import ru.prog.itmo.spacemarine.SpaceMarine;
-import ru.prog.itmo.spacemarine.chapter.Chapter;
 import ru.prog.itmo.speaker.Speaker;
 import ru.prog.itmo.storage.Storage;
 
@@ -23,11 +22,10 @@ public class RemoveGreaterCommand extends ClientIOCommand implements UserAsking 
         super.execute();
         Response<String> response = new Response<>();
         try {
-            @SuppressWarnings("unchecked")
-            Request<Chapter> request = (Request<Chapter>) connectionModule().getRequest();
-            Chapter maxChapter = request.getData();
+            Request<?> request = connectionModule().getRequest();
+            SpaceMarine maxMarine = (SpaceMarine) request.getData();
             List<SpaceMarine> marinesToDelete = storage().getStream()
-                    .filter(marine -> marine.getChapter().compareTo(maxChapter) > 0)
+                    .filter(marine -> marine.compareTo(maxMarine)> 0)
                     .toList();
             if (marinesToDelete.isEmpty()){
                 response.setComment("Нет десантников, находящихся в части старше данной.");

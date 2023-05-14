@@ -1,6 +1,8 @@
 package ru.prog.itmo.spacemarine.coordinates;
 
-public class Coordinates {
+import java.io.Serializable;
+
+public class Coordinates implements Serializable {
     private Float x; //Поле не может быть null
     private Double y; //Максимальное значение поля: 431, Поле не может быть null
 

@@ -8,10 +8,7 @@ import ru.prog.itmo.connection.Response;
 import ru.prog.itmo.spacemarine.SpaceMarine;
 import ru.prog.itmo.speaker.Speaker;
 
-import java.io.IOException;
-import java.io.ObjectInputStream;
 import java.nio.ByteBuffer;
-import java.util.List;
 
 public class ShowCommand extends ServerOCommand {
     public ShowCommand(ConnectionModule connectionModule, Speaker speaker) {
@@ -25,19 +22,30 @@ public class ShowCommand extends ServerOCommand {
             Request<Object> request = new Request<>(COMMAND_TYPE, null);
             ByteBuffer toServer = serializeRequest(request);
             connectionModule().sendRequest(toServer);
+            /*ByteBuffer fromServer = connectionModule().receiveResponse();
+            Response<?> response = getDeserializedResponse(fromServer);
+            if (response.getData() != null) {
+                speaker().speak((String) response.getData());
+            } else {
+                speaker().speak(response.getComment());
+            }*/
             ByteBuffer fromServer = connectionModule().receiveResponse();
-            ObjectInputStream inputStream = getDeserializedInputStream(fromServer);
-            @SuppressWarnings("unchecked")
-            Response<List<SpaceMarine>> response = (Response<List<SpaceMarine>>) inputStream.readObject();
-            List<SpaceMarine> marineList = response.getData();
-            if (marineList.size() != 0)
-                for (SpaceMarine marine : marineList){
-                 speaker().speak(marine.toString());
-             }
-            else {
-               speaker().speak(response.getComment());
+            Response<?> response = getDeserializedResponse(fromServer);
+            if (response.getData() != null) {
+                int marinesCount = (Integer) response.getData();
+                int i = 1;
+                while (i <= marinesCount) {
+                    ByteBuffer buffer = connectionModule().receiveResponse();
+                    Response<?> marineResponse = getDeserializedResponse(buffer);
+                    SpaceMarine currentMarine = (SpaceMarine) marineResponse.getData();
+                    speaker().speak(currentMarine.toString());
+                    speaker().speak("Получено " + i + "/" + marinesCount + " десантников.");
+                    i++;
+                }
+            } else {
+                speaker().speak(response.getComment());
             }
-        } catch (IOException | InvalidConnectionException | ClassNotFoundException e){
+        } catch (InvalidConnectionException | ClassCastException e) {
             speaker().speak("Проблемы с соединением...");
         }
     }

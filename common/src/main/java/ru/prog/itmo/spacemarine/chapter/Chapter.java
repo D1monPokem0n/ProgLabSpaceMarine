@@ -1,8 +1,9 @@
 package ru.prog.itmo.spacemarine.chapter;
 
+import java.io.Serializable;
 import java.util.Objects;
 
-public class Chapter implements Comparable<Chapter> {
+public class Chapter implements Comparable<Chapter>, Serializable {
     private String name; //Поле не может быть null, Строка не может быть пустой
     private String parentLegion;
     private Long marinesCount; //Поле может быть null, Значение поля должно быть больше 0, Максимальное значение поля: 1000

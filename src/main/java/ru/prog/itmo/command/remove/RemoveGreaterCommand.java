@@ -4,7 +4,7 @@ import ru.prog.itmo.command.UserAsking;
 import ru.prog.itmo.storage.Storage;
 import ru.prog.itmo.command.StorageIOCommand;
 import ru.prog.itmo.reader.SpaceMarineReader;
-import ru.prog.itmo.spacemarine.builder.user.SpaceMarineUserCreator;
+import ru.prog.itmo.spacemarine.builder.client.SpaceMarineClientCreator;
 import ru.prog.itmo.spacemarine.SpaceMarine;
 import ru.prog.itmo.spacemarine.builder.CreateCancelledException;
 import ru.prog.itmo.speaker.Speaker;
@@ -19,7 +19,7 @@ public class RemoveGreaterCommand extends StorageIOCommand implements UserAsking
     @Override
     public void execute() {
         super.execute();
-        SpaceMarineUserCreator creator = new SpaceMarineUserCreator(getSpeaker(), getReader());
+        SpaceMarineClientCreator creator = new SpaceMarineClientCreator(getSpeaker(), getReader());
         HashSet<SpaceMarine> marinesToDelete = new HashSet<>();
         getSpeaker().speak("Задайтие десантника, который доллжен стать максимальным в базе. \nВсе, кто выше будут удалены.");
         try {

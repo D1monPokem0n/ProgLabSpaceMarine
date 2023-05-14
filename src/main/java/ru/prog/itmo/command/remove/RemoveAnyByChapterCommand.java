@@ -8,7 +8,7 @@ import ru.prog.itmo.spacemarine.SpaceMarine;
 import ru.prog.itmo.spacemarine.builder.CreateCancelledException;
 import ru.prog.itmo.spacemarine.chapter.Chapter;
 import ru.prog.itmo.spacemarine.chapter.builder.ChapterCreator;
-import ru.prog.itmo.spacemarine.chapter.builder.user.ChapterUserCreator;
+import ru.prog.itmo.spacemarine.chapter.builder.client.ChapterClientCreator;
 import ru.prog.itmo.speaker.Speaker;
 
 public class RemoveAnyByChapterCommand extends StorageIOCommand implements UserAsking {
@@ -24,7 +24,7 @@ public class RemoveAnyByChapterCommand extends StorageIOCommand implements UserA
     @Override
     public void execute() {
         super.execute();
-        ChapterCreator creator = new ChapterUserCreator(getSpeaker(), getReader());
+        ChapterCreator creator = new ChapterClientCreator(getSpeaker(), getReader());
         getSpeaker().speak("Задайте данные о части, из которой вы хотите удалить космодесантника");
         try {
             Chapter chapter = creator.create();

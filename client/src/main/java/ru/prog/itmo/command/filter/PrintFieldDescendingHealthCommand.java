@@ -8,10 +8,7 @@ import ru.prog.itmo.connection.Response;
 import ru.prog.itmo.reader.Reader;
 import ru.prog.itmo.speaker.Speaker;
 
-import java.io.IOException;
-import java.io.ObjectInputStream;
 import java.nio.ByteBuffer;
-import java.util.ArrayList;
 
 public class PrintFieldDescendingHealthCommand extends ServerIOCommand {
     public PrintFieldDescendingHealthCommand(ConnectionModule connectionModule, Speaker speaker, Reader reader) {
@@ -31,16 +28,11 @@ public class PrintFieldDescendingHealthCommand extends ServerIOCommand {
             ByteBuffer toServer = serializeRequest(request);
             connectionModule().sendRequest(toServer);
             ByteBuffer fromServer = connectionModule().receiveResponse();
-            ObjectInputStream stream = getDeserializedInputStream(fromServer);
-            @SuppressWarnings("unchecked")
-            Response<ArrayList<String>> response = (Response<ArrayList<String>>) stream.readObject();
-            ArrayList<String> collection = response.getData();
-            if (collection.size() != 0)
-                for (String output : collection) {
-                    speaker().speak(output);
-                }
+            Response<?> response = getDeserializedResponse(fromServer);
+            if (response.getData() != null)
+                speaker().speak((String) response.getData());
             else speaker().speak(response.getComment());
-        } catch (IOException | ClassNotFoundException | InvalidConnectionException e) {
+        } catch (InvalidConnectionException | ClassCastException e) {
             speaker().speak("Проблемы с соединением...");
         }
     }

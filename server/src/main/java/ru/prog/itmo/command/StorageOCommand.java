@@ -10,7 +10,7 @@ public abstract class StorageOCommand extends StorageCommand{
         this.speaker = speaker;
     }
 
-    public Speaker getSpeaker() {
+    public Speaker speaker() {
         return speaker;
     }
 

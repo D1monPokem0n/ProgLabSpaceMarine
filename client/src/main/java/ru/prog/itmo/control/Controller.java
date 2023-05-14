@@ -1,11 +1,11 @@
 package ru.prog.itmo.control;
 
 import ru.prog.itmo.command.Command;
+import ru.prog.itmo.connection.ConnectionModule;
+import ru.prog.itmo.connection.InvalidConnectionException;
 import ru.prog.itmo.reader.ConsoleReader;
 import ru.prog.itmo.reader.InvalidCommandException;
 import ru.prog.itmo.reader.Reader;
-import ru.prog.itmo.connection.ConnectionModule;
-import ru.prog.itmo.connection.InvalidConnectionException;
 import ru.prog.itmo.speaker.ConsoleSpeaker;
 import ru.prog.itmo.speaker.Speaker;
 
@@ -27,13 +27,9 @@ public class Controller {
         argument = new ConsoleArgument();
         clientState = new ClientState(true);
         commandReader = new CommandReader(reader, argument);
-        try {
-            connectionModule = new ConnectionModule(speaker);
-            commandMap = new CommandMap(connectionModule, clientState, argument, lastCommands, speaker, reader);
-        } catch (InvalidConnectionException e){
-            speaker.speak(e.getMessage());
-            clientState.setWorkStatus(false);
-        }
+        connectionModule = new ConnectionModule(speaker);
+        commandMap = new CommandMap(connectionModule, clientState, argument, lastCommands, speaker, reader);
+
     }
 
     public Controller(ConnectionModule connectionModule, Speaker speaker, Reader reader) {
@@ -47,15 +43,21 @@ public class Controller {
     }
 
     public void run() {
-        String commandName;
-        while (isWork()) {
-            speaker.speak("Введите команду");
-            try {
-                commandName = commandReader.read();
-                executeCommand(commandName);
-            } catch (InvalidCommandException e) {
-                speaker.speak(e.getMessage());
+        try {
+            connectionModule.connect();
+            String commandName;
+            while (isWork()) {
+                try {
+                    speaker.speak("Введите команду");
+                    commandName = commandReader.read();
+                    executeCommand(commandName);
+                } catch (InvalidCommandException e) {
+                    speaker.speak(e.getMessage());
+                }
             }
+        } catch (InvalidConnectionException e) {
+            speaker.speak(e.getMessage());
+            clientState.setWorkStatus(false);
         }
     }
 

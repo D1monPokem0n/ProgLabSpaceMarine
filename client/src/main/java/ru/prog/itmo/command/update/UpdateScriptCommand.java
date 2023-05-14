@@ -2,23 +2,17 @@ package ru.prog.itmo.command.update;
 
 import ru.prog.itmo.command.ScriptExecutable;
 import ru.prog.itmo.command.ServerIOCommand;
-import ru.prog.itmo.spacemarine.builder.script.InvalidScriptException;
+import ru.prog.itmo.connection.ConnectionModule;
+import ru.prog.itmo.connection.InvalidConnectionException;
 import ru.prog.itmo.connection.Request;
 import ru.prog.itmo.connection.Response;
 import ru.prog.itmo.control.ConsoleArgument;
 import ru.prog.itmo.reader.Reader;
-import ru.prog.itmo.connection.ConnectionModule;
-import ru.prog.itmo.connection.InvalidConnectionException;
-import ru.prog.itmo.spacemarine.AstartesCategory;
-import ru.prog.itmo.spacemarine.MeleeWeapon;
-import ru.prog.itmo.spacemarine.SpaceMarine;
-import ru.prog.itmo.spacemarine.CreateCancelledException;
-import ru.prog.itmo.spacemarine.InvalidSpaceMarineValueException;
+import ru.prog.itmo.spacemarine.*;
+import ru.prog.itmo.spacemarine.builder.script.InvalidScriptException;
 import ru.prog.itmo.spacemarine.chapter.Chapter;
 import ru.prog.itmo.speaker.Speaker;
 
-import java.io.IOException;
-import java.io.ObjectInputStream;
 import java.nio.ByteBuffer;
 import java.util.HashMap;
 
@@ -55,10 +49,8 @@ public class UpdateScriptCommand extends ServerIOCommand implements ScriptExecut
             ByteBuffer toServer1 = serializeRequest(request1);
             connectionModule().sendRequest(toServer1);
             ByteBuffer fromServer1 = connectionModule().receiveResponse();
-            ObjectInputStream inputStream1 = getDeserializedInputStream(fromServer1);
-            @SuppressWarnings("unchecked")
-            Response<SpaceMarine> response1 = (Response<SpaceMarine>) inputStream1.readObject();
-            SpaceMarine searchableMarine = response1.getData();
+            Response<?> response1 = getDeserializedResponse(fromServer1);
+            SpaceMarine searchableMarine = (SpaceMarine) response1.getData();
             if (searchableMarine == null)
                 throw new InvalidScriptException("Введено несуществующее id");
             SpaceMarine TMPMarine = SpaceMarine.getTMPSpaceMarine();
@@ -72,15 +64,13 @@ public class UpdateScriptCommand extends ServerIOCommand implements ScriptExecut
             ByteBuffer toServer2 = serializeRequest(request2);
             connectionModule().sendRequest(toServer2);
             ByteBuffer fromServer2 = connectionModule().receiveResponse();
-            ObjectInputStream inputStream2 = getDeserializedInputStream(fromServer2);
-            @SuppressWarnings("unchecked")
-            Response<String> response2 = (Response<String>) inputStream2.readObject();
-            speaker().speak(response2.getData());
+            Response<?> response2 = getDeserializedResponse(fromServer2);
+            speaker().speak((String) response2.getData());
         } catch (NumberFormatException e) {
             throw new InvalidScriptException("Некорректный ввод");
         } catch (InvalidSpaceMarineValueException | CreateCancelledException e) {
             throw new InvalidScriptException(e.getMessage());
-        } catch (IOException | ClassNotFoundException | InvalidConnectionException e){
+        } catch (InvalidConnectionException e){
             throw new InvalidScriptException("Проблемы с соединением...");
         }
     }

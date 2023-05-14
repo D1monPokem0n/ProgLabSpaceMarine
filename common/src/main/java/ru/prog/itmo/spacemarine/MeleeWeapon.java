@@ -1,6 +1,8 @@
 package ru.prog.itmo.spacemarine;
 
-public enum MeleeWeapon {
+import java.io.Serializable;
+
+public enum MeleeWeapon implements Serializable {
     MANREAPER("Manreaper"),
     LIGHTING_CLAW("Lighting claw"),
     POWER_FIST("Power fist");

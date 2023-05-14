@@ -1,4 +1,4 @@
-package ru.prog.itmo.spacemarine.builder.user;
+package ru.prog.itmo.spacemarine.builder.client;
 
 import ru.prog.itmo.spacemarine.InvalidSpaceMarineValueException;
 import ru.prog.itmo.spacemarine.builder.SpaceMarineBuilder;
@@ -10,13 +10,13 @@ import ru.prog.itmo.speaker.Speaker;
 
 import java.util.ArrayList;
 
-public class SpaceMarineUserCreator implements SpaceMarineCreator {
+public class SpaceMarineClientCreator implements SpaceMarineCreator {
     private final SpaceMarineBuilder builder;
     private ArrayList<SpaceMarineCheckSettable> setters;
     private Speaker speaker;
 
-    public SpaceMarineUserCreator(Speaker speaker, Reader reader) {
-        builder = new SpaceMarineUserBuilder(speaker, reader);
+    public SpaceMarineClientCreator(Speaker speaker, Reader reader) {
+        builder = new SpaceMarineClientBuilder(speaker, reader);
         this.speaker = speaker;
         settersInit();
     }

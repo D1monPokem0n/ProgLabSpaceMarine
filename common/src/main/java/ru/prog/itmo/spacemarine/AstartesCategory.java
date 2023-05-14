@@ -1,7 +1,9 @@
 package ru.prog.itmo.spacemarine;
 
 
-public enum AstartesCategory {
+import java.io.Serializable;
+
+public enum AstartesCategory implements Serializable {
     CHAPLAIN("Chaplain"),
     LIBRARIAN("Librarian"),   // chaplain > librarian > apothecary > scout
     APOTHECARY("Apothecary"),

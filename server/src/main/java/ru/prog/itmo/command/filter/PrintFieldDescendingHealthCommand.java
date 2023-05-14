@@ -19,7 +19,7 @@ public class PrintFieldDescendingHealthCommand extends ClientIOCommand {
     @Override
     public void execute() {
         super.execute();
-        Response<List<String>> response = new Response<>();
+        Response<String> response = new Response<>();
         List<String> collectionToSend;
         collectionToSend = storage().getStream()
                 .sorted(Comparator.comparing(SpaceMarine::getHealth).reversed())
@@ -32,7 +32,12 @@ public class PrintFieldDescendingHealthCommand extends ClientIOCommand {
 
                 )
                 .toList();
-        response.setData(collectionToSend);
+        StringBuilder stringBuilder = new StringBuilder();
+        for (String token : collectionToSend) {
+            stringBuilder.append(token);
+            stringBuilder.append('\n');
+        }
+        response.setData(stringBuilder.toString());
         if (collectionToSend.size() == 0) {
             response.setComment("В коллекции нет элементов");
         }

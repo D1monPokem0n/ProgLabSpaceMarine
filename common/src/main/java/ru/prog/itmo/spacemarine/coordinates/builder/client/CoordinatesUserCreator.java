@@ -1,7 +1,7 @@
-package ru.prog.itmo.spacemarine.coordinates.builder.user;
+package ru.prog.itmo.spacemarine.coordinates.builder.client;
 
 import ru.prog.itmo.spacemarine.builder.SpaceMarineCheckSettable;
-import ru.prog.itmo.spacemarine.builder.user.SpaceMarineUserCreator;
+import ru.prog.itmo.spacemarine.builder.client.SpaceMarineClientCreator;
 import ru.prog.itmo.spacemarine.coordinates.builder.CoordinatesBuilder;
 import ru.prog.itmo.spacemarine.coordinates.builder.CoordinatesCreator;
 import ru.prog.itmo.reader.Reader;
@@ -26,7 +26,7 @@ public class CoordinatesUserCreator implements CoordinatesCreator {
     @Override
     public Coordinates create() {
         speaker.speak("Вы начали задавать местоположение десантника относительно плоскости XOY.");
-        SpaceMarineUserCreator.setAll(setters, speaker);
+        SpaceMarineClientCreator.setAll(setters, speaker);
         return builder.build();
     }
 }

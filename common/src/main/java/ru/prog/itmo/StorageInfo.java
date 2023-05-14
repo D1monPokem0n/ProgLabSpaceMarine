@@ -1,5 +1,6 @@
 package ru.prog.itmo;
 
+import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.HashSet;
 
@@ -7,7 +8,7 @@ import java.util.HashSet;
  * Класс, хранящий информацию о классе Storage
  * Хранит кол-во элементов, дату инициализацию, тип коллекции, тип файла с данными
  */
-public class StorageInfo {
+public class StorageInfo implements Serializable {
     private int elementsCount;
     private LocalDateTime creationDate;
     private final String collectionType;

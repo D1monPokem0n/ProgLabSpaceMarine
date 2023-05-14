@@ -6,7 +6,7 @@ import ru.prog.itmo.command.StorageIOCommand;
 import ru.prog.itmo.reader.SpaceMarineReader;
 import ru.prog.itmo.spacemarine.SpaceMarine;
 import ru.prog.itmo.spacemarine.builder.CreateCancelledException;
-import ru.prog.itmo.spacemarine.builder.user.SpaceMarineUserCreator;
+import ru.prog.itmo.spacemarine.builder.client.SpaceMarineClientCreator;
 import ru.prog.itmo.speaker.Speaker;
 
 public class AddIfMinCommand extends StorageIOCommand implements UserAsking {
@@ -19,7 +19,7 @@ public class AddIfMinCommand extends StorageIOCommand implements UserAsking {
         super.execute();
         SpaceMarine minSoldier = getStorage().sort()[0];
         try {
-            SpaceMarineUserCreator creator = new SpaceMarineUserCreator(getSpeaker(), getReader());
+            SpaceMarineClientCreator creator = new SpaceMarineClientCreator(getSpeaker(), getReader());
             SpaceMarine marine = creator.create();
             if (marine.compareTo(minSoldier) < 0) {
                 getStorage().add(marine);

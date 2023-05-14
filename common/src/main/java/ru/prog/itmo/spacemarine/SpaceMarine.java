@@ -4,13 +4,14 @@ import ru.prog.itmo.spacemarine.chapter.Chapter;
 import ru.prog.itmo.spacemarine.chapter.ChapterComparator;
 import ru.prog.itmo.spacemarine.coordinates.Coordinates;
 
+import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Objects;
 import java.util.Random;
 
-public class SpaceMarine implements Comparable<SpaceMarine> {
-    private final long id; //Значение поля должно быть больше 0, Значение этого поля должно быть уникальным, Значение этого поля должно генерироваться автоматически
+public class SpaceMarine implements Comparable<SpaceMarine>, Serializable {
+    private long id; //Значение поля должно быть больше 0, Значение этого поля должно быть уникальным, Значение этого поля должно генерироваться автоматически
     private String name; //Поле не может быть null, Строка не может быть пустой
     private Coordinates coordinates; //Поле не может быть null
     private final java.time.LocalDateTime creationDate; //Поле не может быть null, Значение этого поля должно генерироваться автоматически
@@ -70,6 +71,9 @@ public class SpaceMarine implements Comparable<SpaceMarine> {
         allIDs.add(id);
     }
 
+    public void setId(long id){
+        this.id = id;
+    }
 
     public String getName() {
         return name;

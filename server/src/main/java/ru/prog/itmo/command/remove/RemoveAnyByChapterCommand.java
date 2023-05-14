@@ -8,6 +8,7 @@ import ru.prog.itmo.connection.Response;
 import ru.prog.itmo.reader.Reader;
 import ru.prog.itmo.spacemarine.SpaceMarine;
 import ru.prog.itmo.spacemarine.chapter.Chapter;
+import ru.prog.itmo.spacemarine.chapter.ChapterComparator;
 import ru.prog.itmo.speaker.Speaker;
 import ru.prog.itmo.storage.Storage;
 
@@ -24,9 +25,10 @@ public class RemoveAnyByChapterCommand extends ClientIOCommand implements UserAs
             @SuppressWarnings("unchecked")
             Request<Chapter> request = (Request<Chapter>) connectionModule().getRequest();
             Chapter currentChapter = request.getData();
+            ChapterComparator chapterComparator = new ChapterComparator();
             SpaceMarine marineToDelete = storage()
                     .getStream()
-                    .filter(marine -> marine.getChapter().equals(currentChapter))
+                    .filter(marine -> chapterComparator.compare(marine.getChapter(), currentChapter) == 0)
                     .findAny()
                     .orElse(null);
             if (marineToDelete == null)

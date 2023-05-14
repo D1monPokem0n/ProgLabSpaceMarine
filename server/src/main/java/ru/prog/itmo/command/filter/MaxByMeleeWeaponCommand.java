@@ -23,7 +23,7 @@ public class MaxByMeleeWeaponCommand extends ClientIOCommand implements UserAski
         Response<SpaceMarine> response = new Response<>();
         if (storage().getHashSet().size() != 0) {
             SpaceMarine marineToSend = storage().getStream()
-                    .max(Comparator.comparing(SpaceMarine::getMeleeWeapon))
+                    .min(Comparator.comparing(SpaceMarine::getMeleeWeapon))
                     .orElse(null);
             response.setData(marineToSend);
         } else {

@@ -1,4 +1,4 @@
-package ru.prog.itmo.spacemarine.chapter.builder.user;
+package ru.prog.itmo.spacemarine.chapter.builder.client;
 
 import ru.prog.itmo.spacemarine.CreateCancelledException;
 import ru.prog.itmo.spacemarine.InvalidSpaceMarineValueException;
@@ -7,7 +7,7 @@ import ru.prog.itmo.reader.Reader;
 import ru.prog.itmo.spacemarine.chapter.Chapter;
 import ru.prog.itmo.speaker.Speaker;
 
-public class ChapterUserBuilder implements ChapterBuilder {
+public class ChapterClientBuilder implements ChapterBuilder {
     private String name; //Поле не может быть null, Строка не может быть пустой
     private String parentLegion;
     private Long marinesCount; //Поле может быть null, Значение поля должно быть больше 0, Максимальное значение поля: 1000
@@ -15,7 +15,7 @@ public class ChapterUserBuilder implements ChapterBuilder {
     private final Speaker speaker;
     private final Reader reader;
 
-    public ChapterUserBuilder(Speaker speaker, Reader reader) {
+    public ChapterClientBuilder(Speaker speaker, Reader reader) {
         this.speaker = speaker;
         this.reader = reader;
     }
@@ -33,6 +33,7 @@ public class ChapterUserBuilder implements ChapterBuilder {
     public boolean setParentLegion() {
         speaker.speak("Введите название Легиона-родителя: ");
         String value = reader.read();
+        if (value == null) return true;
         if (value.equals("cancel")) throw new CreateCancelledException();
         parentLegion = value;
         return true;

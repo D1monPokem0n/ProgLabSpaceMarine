@@ -18,9 +18,8 @@ public class RemoveByIdCommand extends ClientOCommand {
         super.execute();
         Response<String> response = new Response<>();
         try {
-            @SuppressWarnings("unchecked")
-            Request<Long> request = (Request<Long>) connectionModule().getRequest();
-            long id = request.getData();
+            Request<?> request = connectionModule().getRequest();
+            long id = (long) request.getData();
             if (storage().getStream().anyMatch(marine -> marine.getId() == id)) {
                 SpaceMarine marineToDelete = storage().getById(id);
                 storage().remove(marineToDelete);
@@ -32,6 +31,7 @@ public class RemoveByIdCommand extends ClientOCommand {
         } catch (ClassCastException e){
             response.setComment("Некорректный запрос.");
         }
+        connectionModule().sendResponse(response);
     }
 
 

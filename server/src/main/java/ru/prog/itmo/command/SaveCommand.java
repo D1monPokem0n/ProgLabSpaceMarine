@@ -17,9 +17,9 @@ public class SaveCommand extends StorageIOCommand {
         super.execute();
         try {
             storage().getFile().save(storage());
-            getSpeaker().speak("Файл успешно записан.");
+            speaker().speak("Файл успешно записан.");
         } catch (NotWritableFileException | WrongStorageFileException e){
-            getSpeaker().speak(e.getMessage());
+            speaker().speak(e.getMessage());
         }
     }
 

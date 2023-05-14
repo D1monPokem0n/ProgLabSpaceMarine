@@ -20,14 +20,14 @@ public class AddCommand extends ClientIOCommand implements UserAsking {
         super.execute();
         Response<String> response = new Response<>();
         try {
-            @SuppressWarnings("unchecked")
-            Request<SpaceMarine> request = (Request<SpaceMarine>) connectionModule().getRequest();
-            SpaceMarine marineToAdd = request.getData();
+            Request<?> request = connectionModule().getRequest();
+            SpaceMarine marineToAdd = (SpaceMarine) request.getData();
             if (storage().contains(marineToAdd)){
                 response.setData("В хранилище уже есть такой десантник.");
             } else {
                 response.setData("Десантник успешно добавлен\n" + marineToAdd);
-                //TODO unique id
+                long id = SpaceMarine.getUniqueId();
+                marineToAdd.setId(id);
                 storage().add(marineToAdd);
             }
             connectionModule().sendResponse(response);

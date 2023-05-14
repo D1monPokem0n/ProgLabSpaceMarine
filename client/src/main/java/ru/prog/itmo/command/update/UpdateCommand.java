@@ -2,22 +2,16 @@ package ru.prog.itmo.command.update;
 
 import ru.prog.itmo.command.ServerIOCommand;
 import ru.prog.itmo.command.UserAsking;
+import ru.prog.itmo.connection.ConnectionModule;
+import ru.prog.itmo.connection.InvalidConnectionException;
 import ru.prog.itmo.connection.Request;
 import ru.prog.itmo.connection.Response;
 import ru.prog.itmo.control.ConsoleArgument;
 import ru.prog.itmo.reader.Reader;
-import ru.prog.itmo.connection.ConnectionModule;
-import ru.prog.itmo.connection.InvalidConnectionException;
-import ru.prog.itmo.spacemarine.AstartesCategory;
-import ru.prog.itmo.spacemarine.MeleeWeapon;
-import ru.prog.itmo.spacemarine.SpaceMarine;
-import ru.prog.itmo.spacemarine.CreateCancelledException;
-import ru.prog.itmo.spacemarine.InvalidSpaceMarineValueException;
+import ru.prog.itmo.spacemarine.*;
 import ru.prog.itmo.spacemarine.chapter.Chapter;
 import ru.prog.itmo.speaker.Speaker;
 
-import java.io.IOException;
-import java.io.ObjectInputStream;
 import java.nio.ByteBuffer;
 import java.util.HashMap;
 
@@ -50,14 +44,12 @@ public class UpdateCommand extends ServerIOCommand implements UserAsking {
     public void execute() {
         try {
             long id = Long.parseLong(argument.getValue());
-            Request<Long> request1 = new Request<>(COMMAND_TYPE, id);
+            Request<Long> request1 = new Request<>("get_by_id", id);
             ByteBuffer toServer1 = serializeRequest(request1);
             connectionModule().sendRequest(toServer1);
             ByteBuffer fromServer1 = connectionModule().receiveResponse();
-            ObjectInputStream inputStream1 = getDeserializedInputStream(fromServer1);
-            @SuppressWarnings("unchecked")
-            Response<SpaceMarine> response1 = (Response<SpaceMarine>) inputStream1.readObject();
-            SpaceMarine searchableMarine = response1.getData();
+            Response<?> response1 = getDeserializedResponse(fromServer1);
+            SpaceMarine searchableMarine = (SpaceMarine) response1.getData();
             if (searchableMarine == null)
                 throw new InvalidSpaceMarineValueException(response1.getComment());
             SpaceMarine TMPMarine = SpaceMarine.getTMPSpaceMarine();
@@ -70,7 +62,10 @@ public class UpdateCommand extends ServerIOCommand implements UserAsking {
             while (!isUpdatingDone) {
                 try {
                     String field = reader().read();
-                    if (field.equals("cancel")) throw new CreateCancelledException("Обновление отменено.");
+                    if (field == null)
+                        throw new InvalidSpaceMarineValueException("Не вводите пустую строку.\nПовторите ввод:");
+                    if (field.equals("cancel"))
+                        throw new CreateCancelledException("Обновление отменено.");
                     if (!updatingFields.containsKey(field))
                         throw new InvalidSpaceMarineValueException("Такого поля не существует.\nПовторите ввод:");
                     while (!isUpdatingDone) {
@@ -89,16 +84,17 @@ public class UpdateCommand extends ServerIOCommand implements UserAsking {
             ByteBuffer toServer2 = serializeRequest(request2);
             connectionModule().sendRequest(toServer2);
             ByteBuffer fromServer2 = connectionModule().receiveResponse();
-            ObjectInputStream inputStream2 = getDeserializedInputStream(fromServer2);
-            @SuppressWarnings("unchecked")
-            Response<String> response2 = (Response<String>) inputStream2.readObject();
-            speaker().speak(response2.getData());
+            Response<?> response2 = getDeserializedResponse(fromServer2);
+            speaker().speak((String) response2.getData());
         } catch (NumberFormatException e) {
             speaker().speak("Вам следует вводить число.");
-        } catch (InvalidSpaceMarineValueException | UpdatingCancelledException | CreateCancelledException e) {
+        } catch (InvalidSpaceMarineValueException | CreateCancelledException e) {
             speaker().speak(e.getMessage());
-        } catch (IOException | ClassNotFoundException | InvalidConnectionException e) {
+        } catch (InvalidConnectionException e) {
             speaker().speak("Проблемы с соединением");
+        } catch (UpdatingCancelledException e){
+            ByteBuffer buffer = serializeRequest(new Request<>(COMMAND_TYPE, "update_cancelled"));
+            connectionModule().sendRequest(buffer);
         }
     }
 
