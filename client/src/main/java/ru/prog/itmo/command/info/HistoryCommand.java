@@ -15,9 +15,9 @@ public class HistoryCommand extends ConsoleOCommand {
     @Override
     public void execute() {
         super.execute();
-        getSpeaker().speak("Последние команды (макс. 14): ");
+        speaker().speak("Последние команды (макс. 14): ");
         for(String command: lastCommands){
-            getSpeaker().speak(command);
+            speaker().speak(command);
         }
     }
 

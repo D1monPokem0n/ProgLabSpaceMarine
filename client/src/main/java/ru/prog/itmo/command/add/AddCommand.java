@@ -1,13 +1,17 @@
 package ru.prog.itmo.command.add;
 
 import ru.prog.itmo.command.UserAsking;
+import ru.prog.itmo.connection.ReceiveModule;
+import ru.prog.itmo.connection.SendModule;
 import ru.prog.itmo.reader.Reader;
-import ru.prog.itmo.connection.ConnectionModule;
 import ru.prog.itmo.speaker.Speaker;
 
 public class AddCommand extends AbstractAddCommand implements UserAsking {
-    public AddCommand(ConnectionModule connectionModule, Speaker speaker, Reader reader) {
-        super("add", connectionModule, speaker, reader);
+    public AddCommand(SendModule sendModule,
+                      ReceiveModule receiveModule,
+                      Speaker speaker,
+                      Reader reader) {
+        super("add", sendModule, receiveModule, speaker, reader);
     }
 
     @Override

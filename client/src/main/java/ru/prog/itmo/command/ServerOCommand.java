@@ -1,12 +1,16 @@
 package ru.prog.itmo.command;
 
-import ru.prog.itmo.connection.ConnectionModule;
+import ru.prog.itmo.connection.ReceiveModule;
+import ru.prog.itmo.connection.SendModule;
 import ru.prog.itmo.speaker.Speaker;
 
 public abstract class ServerOCommand extends ServerCommand {
     private Speaker speaker;
-    public ServerOCommand(String commandType, ConnectionModule connectionModule, Speaker speaker) {
-        super(commandType, connectionModule);
+    public ServerOCommand(String commandType,
+                          SendModule sendModule,
+                          ReceiveModule receiveModule,
+                          Speaker speaker) {
+        super(commandType, sendModule, receiveModule);
         this.speaker = speaker;
     }
 

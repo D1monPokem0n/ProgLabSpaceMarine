@@ -1,10 +1,8 @@
 package ru.prog.itmo.command.add;
 
 import ru.prog.itmo.command.ServerIOCommand;
-import ru.prog.itmo.connection.ConnectionModule;
-import ru.prog.itmo.connection.InvalidConnectionException;
-import ru.prog.itmo.connection.Request;
-import ru.prog.itmo.connection.Response;
+import ru.prog.itmo.connection.*;
+import ru.prog.itmo.control.Controller;
 import ru.prog.itmo.reader.Reader;
 import ru.prog.itmo.spacemarine.CreateCancelledException;
 import ru.prog.itmo.spacemarine.SpaceMarine;
@@ -12,11 +10,13 @@ import ru.prog.itmo.spacemarine.builder.script.InvalidScriptException;
 import ru.prog.itmo.spacemarine.builder.script.SpaceMarineScriptCreator;
 import ru.prog.itmo.speaker.Speaker;
 
-import java.nio.ByteBuffer;
-
 public abstract class AbstractAddScriptCommand extends ServerIOCommand {
-    public AbstractAddScriptCommand(String commandType, ConnectionModule connectionModule, Speaker speaker, Reader reader) {
-        super(commandType, connectionModule, speaker, reader);
+    public AbstractAddScriptCommand(String commandType,
+                                    SendModule sendModule,
+                                    ReceiveModule receiveModule,
+                                    Speaker speaker,
+                                    Reader reader) {
+        super(commandType, sendModule, receiveModule, speaker, reader);
     }
 
     @Override
@@ -25,17 +25,15 @@ public abstract class AbstractAddScriptCommand extends ServerIOCommand {
         try {
             SpaceMarineScriptCreator creator = new SpaceMarineScriptCreator(reader());
             SpaceMarine marine = creator.create();
-            Request<SpaceMarine> request = new Request<>(COMMAND_TYPE, marine, true);
-            ByteBuffer toServer = serializeRequest(request);
-            connectionModule().sendRequest(toServer);
-            ByteBuffer fromServer = connectionModule().receiveResponse();
-            Response<?> response = getDeserializedResponse(fromServer);
+            marine.setOwnerUser(Controller.getUser().getLogin());
+            sendModule().submitSending(new Request<>(COMMAND_TYPE, marine, true));
+            var response = receiveModule().getResponse();
             if (response.getData() != null)
                 speaker().speak((String) response.getData());
             else throw new InvalidConnectionException(response.getComment());
-        } catch (CreateCancelledException  e) {
+        } catch (CreateCancelledException e) {
             throw new InvalidScriptException("Проблемы с соединением...");
-        } catch (InvalidConnectionException e){
+        } catch (InvalidConnectionException e) {
             throw new InvalidScriptException(e.getMessage());
         }
     }

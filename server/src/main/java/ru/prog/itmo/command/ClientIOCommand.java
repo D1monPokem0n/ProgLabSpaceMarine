@@ -1,17 +1,17 @@
 package ru.prog.itmo.command;
 
-import ru.prog.itmo.connection.ConnectionModule;
+import ru.prog.itmo.connection.ConnectionManager;
 import ru.prog.itmo.reader.Reader;
 import ru.prog.itmo.speaker.Speaker;
 import ru.prog.itmo.storage.Storage;
 
 public abstract class ClientIOCommand extends StorageIOCommand {
-    ConnectionModule connectionModule;
-    public ClientIOCommand(Storage storage, ConnectionModule connectionModule, Speaker speaker, Reader reader){
+    ConnectionManager connectionManager;
+    public ClientIOCommand(Storage storage, ConnectionManager connectionManager, Speaker speaker, Reader reader){
         super(storage, speaker, reader);
-        this.connectionModule = connectionModule;
+        this.connectionManager = connectionManager;
     }
-    public ConnectionModule connectionModule(){
-        return connectionModule;
+    public ConnectionManager connectionManager(){
+        return connectionManager;
     }
 }

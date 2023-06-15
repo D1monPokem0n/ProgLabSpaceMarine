@@ -9,7 +9,7 @@ public abstract class ConsoleOCommand extends ConsoleCommand{
         this.speaker = speaker;
     }
 
-    public Speaker getSpeaker() {
+    public Speaker speaker() {
         return speaker;
     }
 

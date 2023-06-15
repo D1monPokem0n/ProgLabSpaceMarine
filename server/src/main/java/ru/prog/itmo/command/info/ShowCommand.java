@@ -1,45 +1,29 @@
 package ru.prog.itmo.command.info;
 
-import ru.prog.itmo.command.ClientOCommand;
-import ru.prog.itmo.connection.ConnectionModule;
-import ru.prog.itmo.connection.InvalidConnectionException;
+import ru.prog.itmo.command.ClientCommand;
+import ru.prog.itmo.connection.ConnectionManager;
 import ru.prog.itmo.connection.Response;
 import ru.prog.itmo.spacemarine.SpaceMarine;
-import ru.prog.itmo.speaker.Speaker;
 import ru.prog.itmo.storage.Storage;
 
-public class ShowCommand extends ClientOCommand {
-    public ShowCommand(Storage storage, ConnectionModule connectionModule, Speaker speaker) {
-        super(storage, connectionModule, speaker);
+import java.net.SocketAddress;
+import java.util.ArrayList;
+import java.util.List;
+
+public class ShowCommand extends ClientCommand {
+    public ShowCommand(Storage storage, ConnectionManager connectionManager) {
+        super(storage, connectionManager);
     }
 
     @Override
-    public void execute() {
-        super.execute();
-        try {
-            /*Response<String> response = new Response<>();
-            StringBuilder builder = new StringBuilder();
-            for (SpaceMarine marine : storage().sort()){
-                builder.append(marine.toString());
-                builder.append("\n");
-            }
-            response.setData(builder.toString());*/
-            Response<Integer> response = new Response<>();
-            if (storage().getHashSet().size() != 0) {
-                response.setData(storage().getHashSet().size());
-                connectionModule().sendResponse(response);
-                for (SpaceMarine currentMarine : storage().getHashSet()) {
-                    Response<SpaceMarine> marineResponse = new Response<>();
-                    marineResponse.setData(currentMarine);
-                    connectionModule().sendResponse(marineResponse);
-                }
-            } else {
-                response.setComment("Хранилище пустое.");
-                connectionModule().sendResponse(response);
-            }
-        } catch (InvalidConnectionException e) {
-            speaker().speak("Не удалось отправить ответ клиенту.");
-        }
+    public void execute(SocketAddress address) {
+        super.execute(address);
+        Response<ArrayList<SpaceMarine>> response = new Response<>();
+        if (storage().getHashSet().size() != 0)
+            response.setData(new ArrayList<>(List.of(storage().sort())));
+        else
+            response.setComment("Хранилище пустое.");
+        connectionManager().putResponse(address, response);
     }
 
 

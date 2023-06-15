@@ -6,9 +6,7 @@ import ru.prog.itmo.spacemarine.coordinates.Coordinates;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
-import java.util.HashSet;
 import java.util.Objects;
-import java.util.Random;
 
 public class SpaceMarine implements Comparable<SpaceMarine>, Serializable {
     private long id; //Значение поля должно быть больше 0, Значение этого поля должно быть уникальным, Значение этого поля должно генерироваться автоматически
@@ -20,7 +18,29 @@ public class SpaceMarine implements Comparable<SpaceMarine>, Serializable {
     private AstartesCategory category; //Поле может быть null
     private MeleeWeapon meleeWeapon; //Поле не может быть null
     private Chapter chapter; //Поле может быть null
-    private static HashSet<Long> allIDs = new HashSet<>();
+    private String ownerUser;
+
+    public SpaceMarine(long id,
+                       String name,
+                       Coordinates coordinates,
+                       java.time.LocalDateTime creationDate,
+                       int health,
+                       long heartCount,
+                       AstartesCategory category,
+                       MeleeWeapon meleeWeapon,
+                       Chapter chapter,
+                       String ownerUser) {
+        this.id = id;
+        this.name = name;
+        this.coordinates = coordinates;
+        this.creationDate = creationDate;
+        this.health = health;
+        this.heartCount = heartCount;
+        this.category = category;
+        this.meleeWeapon = meleeWeapon;
+        this.chapter = chapter;
+        this.ownerUser = ownerUser;
+    }
 
     public SpaceMarine(long id,
                        String name,
@@ -52,23 +72,9 @@ public class SpaceMarine implements Comparable<SpaceMarine>, Serializable {
                 0,
                 AstartesCategory.SCOUT,
                 MeleeWeapon.POWER_FIST,
-                new Chapter("Soup cookers", "", 0L, "Earth"));
-    }
-
-    public static long getUniqueId() {
-        Random random = new Random();
-        long newId = -1;
-        boolean isSuccess = false;
-        while (!isSuccess) {
-            newId = Math.abs(random.nextLong());
-            if (allIDs.contains(newId)) continue;
-            isSuccess = true;
-        }
-        return newId;
-    }
-
-    public static void addId(long id) {
-        allIDs.add(id);
+                new Chapter("Soup cookers", "", 0L, "Earth"),
+                "Emperor"
+        );
     }
 
     public void setId(long id){
@@ -135,6 +141,14 @@ public class SpaceMarine implements Comparable<SpaceMarine>, Serializable {
         this.chapter = chapter;
     }
 
+    public String getOwnerUser() {
+        return ownerUser;
+    }
+
+    public void setOwnerUser(String ownerUser) {
+        this.ownerUser = ownerUser;
+    }
+
     public void setAllFields(SpaceMarine other) { //Сделано для команды update, поэтому id и creationDate не меняются.
         this.name = other.name;
         this.getCoordinates().setX(other.getCoordinates().getX());
@@ -184,7 +198,8 @@ public class SpaceMarine implements Comparable<SpaceMarine>, Serializable {
                 + ",\n heartCount: " + heartCount
                 + ",\n category: " + categoryString
                 + ",\n meleeWeapon:" + meleeWeapon.getName()
-                + ",\n chapter:[" + chapterString + "]" + "]";
+                + ",\n chapter:[" + chapterString + "]"
+                + ",\n ownerUser:" + ownerUser + "]";
     }
 
     @Override

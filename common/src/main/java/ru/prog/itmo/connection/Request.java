@@ -6,16 +6,21 @@ public class Request<T> implements Serializable {
     private String commandType;
     private T data;
     private boolean isScriptCommand;
+    private String salt;
+    private User user;
 
     public Request(String commandType, T data){
         this.commandType = commandType;
         this.data = data;
         this.isScriptCommand = false;
+        user = null;
     }
+
     public Request(String commandType, T data, boolean isScriptCommand){
         this.commandType = commandType;
         this.data = data;
         this.isScriptCommand = isScriptCommand;
+        user = null;
     }
 
     public void setCommandType(String commandType) {
@@ -40,5 +45,21 @@ public class Request<T> implements Serializable {
 
     public void setScriptCommand(boolean scriptCommand) {
         isScriptCommand = scriptCommand;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
+    }
+
+    public User getUser() {
+        return user;
+    }
+
+    public String getSalt() {
+        return salt;
+    }
+
+    public void setSalt(String salt) {
+        this.salt = salt;
     }
 }

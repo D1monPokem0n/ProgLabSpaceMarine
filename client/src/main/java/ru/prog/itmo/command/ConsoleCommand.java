@@ -7,6 +7,5 @@ public abstract class ConsoleCommand extends AbstractClientCommand {
 
     @Override
     public void execute() {
-
     }
 }

@@ -1,27 +1,11 @@
 package ru.prog.itmo.storage;
 
-import com.opencsv.CSVWriter;
-import com.opencsv.CSVWriterBuilder;
-import com.opencsv.ICSVWriter;
-import ru.prog.itmo.StorageInfo;
-import ru.prog.itmo.spacemarine.CreateCancelledException;
-import ru.prog.itmo.spacemarine.InvalidSpaceMarineValueException;
-import ru.prog.itmo.spacemarine.SpaceMarine;
-import ru.prog.itmo.spacemarine.builder.file.SpaceMarineFileCreator;
-
-import java.io.*;
-import java.nio.file.Files;
-import java.nio.file.InvalidPathException;
 import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeParseException;
-import java.util.*;
 
 public class StorageFile {
     private Path path;
     private boolean isFileExistBefore;
-
+    /*
     public StorageFile() {
         String csvfile = System.getenv("LAB");
         csvfile = csvfile == null ? "" : csvfile;
@@ -36,17 +20,17 @@ public class StorageFile {
                 }
             } else {
                 path = Paths.get(csvfile);
-                if (!Files.exists(path)) throw new WrongStorageFileException("Данного файла не существует");
+                if (!Files.exists(path)) throw new WrongDataBaseException("Данного файла не существует");
                 isFileExistBefore = true;
             }
         } catch (IOException e) {
-            throw new WrongStorageFileException("Проблемы при считывании из файла");
+            throw new WrongDataBaseException("Проблемы при считывании из файла");
         } catch (InvalidPathException e){
-            throw new WrongStorageFileException("Указан некорректный путь к файлу");
+            throw new WrongDataBaseException("Указан некорректный путь к файлу");
         }
     }
 
-    public StorageInfo getStorageInfo() throws WrongStorageFileException {
+    public StorageInfo getStorageInfo() throws WrongDataBaseException {
         try {
             FileInputStream inputStream = new FileInputStream(path.toFile());
             InputStreamReader reader = new InputStreamReader(inputStream);
@@ -55,7 +39,7 @@ public class StorageFile {
                 return new StorageInfo();
             String[] values = scanner.nextLine().split(",");
             if (values.length != StorageInfo.getFieldsCount())
-                throw new WrongStorageFileException("Некорректное число значений об информации в файле");
+                throw new WrongDataBaseException("Некорректное число значений об информации в файле");
             int storageElementsCount = Integer.parseInt(values[0]);
             LocalDateTime storageCreationDate = LocalDateTime.parse(values[1]);
             String storageCollectionType = values[2];
@@ -63,17 +47,17 @@ public class StorageFile {
             String[] valuesByDot = path.toString().split("\\.");
             String fileExtension = valuesByDot[valuesByDot.length - 1];
             if (!storageFileType.equals(fileExtension))
-                throw new WrongStorageFileException("Неверное разрешение файла в информации о коллекции.");
+                throw new WrongDataBaseException("Неверное разрешение файла в информации о коллекции.");
             scanner.close();
             reader.close();
             inputStream.close();
             return new StorageInfo(storageElementsCount, storageCreationDate, storageCollectionType, storageFileType);
         } catch (IOException e) {
-            throw new WrongStorageFileException("Проблемы, при считывании из файла.");
+            throw new WrongDataBaseException("Проблемы, при считывании из файла.");
         } catch (DateTimeParseException e) {
-            throw new WrongStorageFileException("Неверный формат даты в информации о коллекции.");
+            throw new WrongDataBaseException("Неверный формат даты в информации о коллекции.");
         } catch (NumberFormatException e) {
-            throw new WrongStorageFileException("Неверный формат количества элементов в информации о коллекции.");
+            throw new WrongDataBaseException("Неверный формат количества элементов в информации о коллекции.");
         }
     }
 
@@ -97,11 +81,11 @@ public class StorageFile {
             }
             return marines;
         } catch (IOException e) {
-            throw new WrongStorageFileException("Беды с файлом у вас.");
+            throw new WrongDataBaseException("Беды с файлом у вас.");
         } catch (NullPointerException | NumberFormatException e) {
-            throw new WrongStorageFileException("Некорректные данные по космодесантникам в файле.");
+            throw new WrongDataBaseException("Некорректные данные по космодесантникам в файле.");
         } catch (InvalidSpaceMarineValueException | CreateCancelledException e){
-            throw new WrongStorageFileException(e.getMessage());
+            throw new WrongDataBaseException(e.getMessage());
         }
     }
 
@@ -111,7 +95,7 @@ public class StorageFile {
                 String.valueOf(storage.getInfo().getElementsCount()),
                 String.valueOf(storage.getInfo().getCreationDate()),
                 storage.getInfo().getCollectionType(),
-                storage.getInfo().getFileType()
+                storage.getInfo().getDataBaseName()
         };
         try {
             FileOutputStream out = new FileOutputStream(path.toFile());
@@ -149,12 +133,12 @@ public class StorageFile {
             csvWriter.close();
             writer.close();
         } catch (IOException e) {
-            throw new WrongStorageFileException(e.getMessage());
+            throw new WrongDataBaseException(e.getMessage());
         }
     }
 
 
     public boolean isExist() {
         return isFileExistBefore;
-    }
+    }*/
 }

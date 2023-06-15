@@ -1,7 +1,8 @@
 package ru.prog.itmo.control;
 
 import ru.prog.itmo.command.Command;
-import ru.prog.itmo.command.ExitCommand;
+import ru.prog.itmo.command.authorization.LogOutCommand;
+import ru.prog.itmo.command.exit.ExitCommand;
 import ru.prog.itmo.command.add.AddCommand;
 import ru.prog.itmo.command.add.AddIfMinCommand;
 import ru.prog.itmo.command.add.AddIfMinScriptCommand;
@@ -16,14 +17,13 @@ import ru.prog.itmo.command.remove.*;
 import ru.prog.itmo.command.script.ExecuteScriptCommand;
 import ru.prog.itmo.command.update.UpdateCommand;
 import ru.prog.itmo.command.update.UpdateScriptCommand;
-import ru.prog.itmo.reader.Reader;
 import ru.prog.itmo.connection.ConnectionModule;
+import ru.prog.itmo.connection.ReceiveModule;
+import ru.prog.itmo.connection.SendModule;
+import ru.prog.itmo.reader.Reader;
 import ru.prog.itmo.speaker.Speaker;
 
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import static java.util.Map.entry;
 import static java.util.Map.ofEntries;
@@ -32,63 +32,68 @@ public class CommandMap {
     private final HashMap<String, Command> commandMap;
     private final Map<String, List<Command>> commandsRealizationsMap;
 
-    public CommandMap(ConnectionModule connectionModule,
+    public CommandMap(Properties properties,
+                      ConnectionModule connectionModule,
+                      SendModule sendModule,
+                      ReceiveModule receiveModule,
                       ClientState clientState,
                       ConsoleArgument argument,
                       LinkedList<String> lastCommands,
                       Speaker speaker,
                       Reader reader) {
         commandMap = new HashMap<>();
-        commandMap.put("add", new AddCommand(connectionModule, speaker, reader));
-        commandMap.put("add_if_min", new AddIfMinCommand(connectionModule, speaker, reader));
-        commandMap.put("clear", new ClearCommand(connectionModule, speaker, reader));
-        commandMap.put("execute_script", new ExecuteScriptCommand(connectionModule, speaker, argument));
+        commandMap.put("add", new AddCommand(sendModule, receiveModule, speaker, reader));
+        commandMap.put("add_if_min", new AddIfMinCommand(sendModule, receiveModule, speaker, reader));
+        commandMap.put("clear", new ClearCommand(sendModule, receiveModule, speaker, reader));
+        commandMap.put("execute_script", new ExecuteScriptCommand(properties, connectionModule,sendModule, receiveModule, speaker, argument));
         commandMap.put("exit", new ExitCommand(clientState));
-        commandMap.put("remove_any_by_chapter", new RemoveAnyByChapterCommand(connectionModule, speaker, reader));
-        commandMap.put("max_by_melee_weapon", new MaxByMeleeWeaponCommand(connectionModule, speaker));
+        commandMap.put("remove_any_by_chapter", new RemoveAnyByChapterCommand(sendModule, receiveModule, speaker, reader));
+        commandMap.put("max_by_melee_weapon", new MaxByMeleeWeaponCommand(sendModule, receiveModule, speaker));
         commandMap.put("help", new HelpCommand(speaker, this));
         commandMap.put("history", new HistoryCommand(speaker, lastCommands));
-        commandMap.put("info", new InfoCommand(connectionModule, speaker));
-        commandMap.put("print_field_descending_health", new PrintFieldDescendingHealthCommand(connectionModule, speaker, reader));
-        commandMap.put("remove_by_id", new RemoveByIdCommand(connectionModule, speaker, argument));
-        commandMap.put("remove_greater", new RemoveGreaterCommand(connectionModule, speaker, reader));
-        commandMap.put("show", new ShowCommand(connectionModule, speaker));
-        commandMap.put("update", new UpdateCommand(connectionModule, argument, speaker, reader));
+        commandMap.put("info", new InfoCommand(sendModule, receiveModule, speaker));
+        commandMap.put("print_field_descending_health", new PrintFieldDescendingHealthCommand(sendModule, receiveModule, speaker, reader));
+        commandMap.put("remove_by_id", new RemoveByIdCommand(sendModule, receiveModule, speaker, argument));
+        commandMap.put("remove_greater", new RemoveGreaterCommand(sendModule, receiveModule, speaker, reader));
+        commandMap.put("show", new ShowCommand(sendModule, receiveModule, speaker));
+        commandMap.put("update", new UpdateCommand(sendModule, receiveModule, argument, speaker, reader));
+        commandMap.put("log_out", new LogOutCommand(speaker));
 
         commandsRealizationsMap = ofEntries(
                 entry("add", List.of(
-                        new AddCommand(connectionModule, speaker, reader),
-                        new AddScriptCommand(connectionModule, speaker, reader)
+                        new AddCommand(sendModule, receiveModule, speaker, reader),
+                        new AddScriptCommand(sendModule, receiveModule, speaker, reader)
                 )),
                 entry("add_if_min", List.of(
-                        new AddIfMinCommand(connectionModule, speaker, reader),
-                        new AddIfMinScriptCommand(connectionModule, speaker, reader)
+                        new AddIfMinCommand(sendModule, receiveModule, speaker, reader),
+                        new AddIfMinScriptCommand(sendModule, receiveModule, speaker, reader)
                 )),
                 entry("clear", List.of(
-                        new ClearCommand(connectionModule, speaker, reader),
-                        new ClearScriptCommand(connectionModule, speaker)
+                        new ClearCommand(sendModule, receiveModule, speaker, reader),
+                        new ClearScriptCommand(sendModule, receiveModule, speaker)
                 )),
-                entry("execute_script", List.of(new ExecuteScriptCommand(connectionModule, speaker, argument))),
+                entry("execute_script", List.of(new ExecuteScriptCommand(properties, connectionModule, sendModule, receiveModule, speaker, argument))),
                 entry("exit", List.of(new ExitCommand(clientState))),
                 entry("remove_any_by_chapter", List.of(
-                        new RemoveAnyByChapterCommand(connectionModule, speaker, reader),
-                        new RemoveAnyByChapterScriptCommand(connectionModule, speaker, reader)
+                        new RemoveAnyByChapterCommand(sendModule, receiveModule, speaker, reader),
+                        new RemoveAnyByChapterScriptCommand(sendModule, receiveModule, speaker, reader)
                 )),
-                entry("max_by_melee_weapon", List.of(new MaxByMeleeWeaponCommand(connectionModule, speaker))),
+                entry("max_by_melee_weapon", List.of(new MaxByMeleeWeaponCommand(sendModule, receiveModule, speaker))),
                 entry("help", List.of(new HelpCommand(speaker, this))),
                 entry("history", List.of(new HistoryCommand(speaker, lastCommands))),
-                entry("info", List.of(new InfoCommand(connectionModule, speaker))),
-                entry("print_field_descending_health", List.of(new PrintFieldDescendingHealthCommand(connectionModule, speaker, reader))),
-                entry("remove_by_id", List.of(new RemoveByIdCommand(connectionModule, speaker, argument))),
+                entry("info", List.of(new InfoCommand(sendModule, receiveModule, speaker))),
+                entry("print_field_descending_health", List.of(new PrintFieldDescendingHealthCommand(sendModule, receiveModule, speaker, reader))),
+                entry("remove_by_id", List.of(new RemoveByIdCommand(sendModule, receiveModule, speaker, argument))),
                 entry("remove_greater", List.of(
-                        new RemoveGreaterCommand(connectionModule, speaker, reader),
-                        new RemoveGreaterScriptCommand(connectionModule, speaker, reader)
+                        new RemoveGreaterCommand(sendModule, receiveModule, speaker, reader),
+                        new RemoveGreaterScriptCommand(sendModule, receiveModule, speaker, reader)
                 )),
-                entry("show", List.of(new ShowCommand(connectionModule, speaker))),
+                entry("show", List.of(new ShowCommand(sendModule, receiveModule, speaker))),
                 entry("update", List.of(
-                        new UpdateCommand(connectionModule, argument, speaker, reader),
-                        new UpdateScriptCommand(connectionModule, argument, speaker, reader)
-                ))
+                        new UpdateCommand(sendModule, receiveModule, argument, speaker, reader),
+                        new UpdateScriptCommand(sendModule, receiveModule, argument, speaker, reader)
+                )),
+                entry("log_out", List.of(new LogOutCommand(speaker)))
         );
     }
 

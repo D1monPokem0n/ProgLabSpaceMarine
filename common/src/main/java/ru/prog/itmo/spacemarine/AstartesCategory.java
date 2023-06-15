@@ -4,10 +4,10 @@ package ru.prog.itmo.spacemarine;
 import java.io.Serializable;
 
 public enum AstartesCategory implements Serializable {
-    CHAPLAIN("Chaplain"),
-    LIBRARIAN("Librarian"),   // chaplain > librarian > apothecary > scout
-    APOTHECARY("Apothecary"),
-    SCOUT("Scout");
+    CHAPLAIN("CHAPLAIN"),
+    LIBRARIAN("LIBRARIAN"),   // chaplain > librarian > apothecary > scout
+    APOTHECARY("APOTHECARY"),
+    SCOUT("SCOUT");
 
     private final String name;
 

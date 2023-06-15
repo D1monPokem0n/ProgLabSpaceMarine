@@ -1,15 +1,15 @@
 package ru.prog.itmo.command;
 
-import ru.prog.itmo.connection.ConnectionModule;
+import ru.prog.itmo.connection.ConnectionManager;
 import ru.prog.itmo.storage.Storage;
 
 public abstract class ClientCommand extends StorageCommand {
-    ConnectionModule connectionModule;
-    public ClientCommand(Storage storage, ConnectionModule connectionModule){
+    ConnectionManager connectionManager;
+    public ClientCommand(Storage storage, ConnectionManager connectionManager){
         super(storage);
-        this.connectionModule = connectionModule;
+        this.connectionManager = connectionManager;
     }
-    public ConnectionModule connectionModule(){
-        return connectionModule;
+    public ConnectionManager connectionManager(){
+        return connectionManager;
     }
 }

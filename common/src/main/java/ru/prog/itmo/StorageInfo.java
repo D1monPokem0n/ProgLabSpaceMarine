@@ -1,7 +1,8 @@
 package ru.prog.itmo;
 
+import ru.prog.itmo.spacemarine.SpaceMarine;
+
 import java.io.Serializable;
-import java.time.LocalDateTime;
 import java.util.HashSet;
 
 /**
@@ -10,24 +11,15 @@ import java.util.HashSet;
  */
 public class StorageInfo implements Serializable {
     private int elementsCount;
-    private LocalDateTime creationDate;
     private final String collectionType;
-    private final String fileType;
-    private static int fieldsCount = 4;
+    private final String dataBaseName;
+    private final static int fieldsCount = 4;
 
-    /**
-     * Конструктор класса, устанавливающий все поля.
-     * Используется, при загрузке данных о коллекции из файла с данными.
-     * @param elementsCount - число элементов
-     * @param creationDate - дата инициализации коллекции
-     * @param collectionType - тип коллекции
-     * @param fileType - тип файла с данными
-     */
-    public StorageInfo(int elementsCount, LocalDateTime creationDate, String collectionType, String fileType){
-        this.elementsCount = elementsCount;
-        this.creationDate = creationDate;
-        this.collectionType = collectionType;
-        this.fileType = fileType;
+
+    public StorageInfo(HashSet<SpaceMarine> hashSet)  {
+        this.elementsCount = hashSet.size();
+        this.collectionType = hashSet.getClass().getTypeName();
+        this.dataBaseName = "PostgreSQL";
     }
 
     /**
@@ -36,18 +28,10 @@ public class StorageInfo implements Serializable {
      */
     public StorageInfo(){
         elementsCount = 0;
-        creationDate = LocalDateTime.now();
         collectionType = HashSet.class.getTypeName();
-        fileType = "csv";
+        dataBaseName = "PostgreSQL";
     }
 
-    /**
-     * Метод, возвращающий дату инициализации.
-     * @return creationDate - дата инициализации.
-     */
-    public LocalDateTime getCreationDate() {
-        return creationDate;
-    }
 
     /**
      * Метод, возвращающий число элементов.
@@ -77,8 +61,8 @@ public class StorageInfo implements Serializable {
      * Метод, возвращающий тип файла с данными.
      * @return fileType - тип файла.
      */
-    public String getFileType() {
-        return fileType;
+    public String getDataBaseName() {
+        return dataBaseName;
     }
 
     /**

@@ -1,17 +1,13 @@
 package ru.prog.itmo.spacemarine.builder.client;
 
-import ru.prog.itmo.spacemarine.CreateCancelledException;
-import ru.prog.itmo.spacemarine.InvalidSpaceMarineValueException;
+import ru.prog.itmo.reader.Reader;
+import ru.prog.itmo.spacemarine.*;
 import ru.prog.itmo.spacemarine.builder.SpaceMarineBuilder;
+import ru.prog.itmo.spacemarine.chapter.Chapter;
 import ru.prog.itmo.spacemarine.chapter.builder.ChapterCreator;
 import ru.prog.itmo.spacemarine.chapter.builder.client.ChapterClientCreator;
-import ru.prog.itmo.spacemarine.coordinates.builder.client.CoordinatesUserCreator;
-import ru.prog.itmo.reader.Reader;
-import ru.prog.itmo.spacemarine.AstartesCategory;
-import ru.prog.itmo.spacemarine.MeleeWeapon;
-import ru.prog.itmo.spacemarine.SpaceMarine;
-import ru.prog.itmo.spacemarine.chapter.Chapter;
 import ru.prog.itmo.spacemarine.coordinates.Coordinates;
+import ru.prog.itmo.spacemarine.coordinates.builder.client.CoordinatesUserCreator;
 import ru.prog.itmo.speaker.Speaker;
 
 import static java.time.LocalDateTime.now;
@@ -26,8 +22,8 @@ public class SpaceMarineClientBuilder implements SpaceMarineBuilder {
     private AstartesCategory category; //Поле может быть null
     private MeleeWeapon meleeWeapon; //Поле не может быть null
     private Chapter chapter; //Поле может быть null
-    private Reader reader;
-    private Speaker speaker;
+    private final Reader reader;
+    private final Speaker speaker;
 
     public SpaceMarineClientBuilder(Speaker speaker, Reader reader) {
         this.reader = reader;
@@ -35,9 +31,7 @@ public class SpaceMarineClientBuilder implements SpaceMarineBuilder {
     }
 
     public boolean setId() {
-        id = SpaceMarine.getUniqueId();
-        if (id < 0)
-            throw new CreateCancelledException("Возникли проблемы с id. Возможно вы вышли за пределы Java.");
+        id = 0;
         return true;
     }
 

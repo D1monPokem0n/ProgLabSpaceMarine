@@ -1,35 +1,35 @@
 package ru.prog.itmo.command.filter;
 
-import ru.prog.itmo.command.ClientIOCommand;
+import ru.prog.itmo.command.ClientCommand;
 import ru.prog.itmo.command.UserAsking;
-import ru.prog.itmo.connection.ConnectionModule;
+import ru.prog.itmo.connection.ConnectionManager;
 import ru.prog.itmo.connection.Response;
-import ru.prog.itmo.reader.Reader;
 import ru.prog.itmo.spacemarine.SpaceMarine;
-import ru.prog.itmo.speaker.Speaker;
 import ru.prog.itmo.storage.Storage;
 
+import java.net.SocketAddress;
 import java.util.Comparator;
 
 
-public class MaxByMeleeWeaponCommand extends ClientIOCommand implements UserAsking {
-    public MaxByMeleeWeaponCommand(Storage storage, ConnectionModule connectionModule, Speaker speaker, Reader reader) {
-        super(storage, connectionModule, speaker, reader);
+public class MaxByMeleeWeaponCommand extends ClientCommand implements UserAsking {
+    public MaxByMeleeWeaponCommand(Storage storage, ConnectionManager connectionManager) {
+        super(storage, connectionManager);
     }
 
     @Override
-    public void execute() {
-        super.execute();
+    public void execute(SocketAddress address) {
+        super.execute(address);
         Response<SpaceMarine> response = new Response<>();
         if (storage().getHashSet().size() != 0) {
-            SpaceMarine marineToSend = storage().getStream()
+            SpaceMarine marineToSend = storage()
+                    .getStream()
                     .min(Comparator.comparing(SpaceMarine::getMeleeWeapon))
                     .orElse(null);
             response.setData(marineToSend);
         } else {
             response.setComment("В коллекции нет элементов");
         }
-        connectionModule().sendResponse(response);
+        connectionManager().putResponse(address, response);
     }
 
     @Override

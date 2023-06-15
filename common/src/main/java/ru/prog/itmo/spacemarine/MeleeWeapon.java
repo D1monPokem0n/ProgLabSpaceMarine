@@ -3,9 +3,9 @@ package ru.prog.itmo.spacemarine;
 import java.io.Serializable;
 
 public enum MeleeWeapon implements Serializable {
-    MANREAPER("Manreaper"),
-    LIGHTING_CLAW("Lighting claw"),
-    POWER_FIST("Power fist");
+    MANREAPER("MANREAPER"),
+    LIGHTING_CLAW("LIGHTING_CLAW"),
+    POWER_FIST("POWER_FIST");
     private final String name;
 
     MeleeWeapon(String name) {
@@ -16,9 +16,6 @@ public enum MeleeWeapon implements Serializable {
         return this.name;
     }
 
-    public static MeleeWeapon getMaxWeapon(){
-        return MANREAPER;
-    }
 
     public static MeleeWeapon getMeleeWeapon(String weaponName) throws IllegalArgumentException{
         switch (weaponName){

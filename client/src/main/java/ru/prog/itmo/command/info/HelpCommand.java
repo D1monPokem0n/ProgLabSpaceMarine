@@ -15,7 +15,7 @@ public class HelpCommand extends ConsoleOCommand {
     @Override
     public void execute() {
         for (String key : commands.getCommandHashMap().keySet()) {
-            getSpeaker().speak(key + ": " + commands.getCommand(key).getDescription());
+            speaker().speak(key + ": " + commands.getCommand(key).getDescription());
         }
     }
 

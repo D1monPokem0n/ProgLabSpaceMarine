@@ -7,7 +7,7 @@ import java.util.regex.Pattern;
 
 public class CommandReader {
     private Reader reader;
-    private final String FORMAT = "(exit|save)";
+    private final String FORMAT = "(exit|save|help|change_access_token_time|change_refresh_token_time|invalidate_token)";
 
     public CommandReader(Reader reader) {
         this.reader = reader;

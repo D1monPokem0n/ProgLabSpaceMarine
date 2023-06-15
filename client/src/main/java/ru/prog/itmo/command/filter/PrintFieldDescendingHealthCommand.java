@@ -1,18 +1,16 @@
 package ru.prog.itmo.command.filter;
 
 import ru.prog.itmo.command.ServerIOCommand;
-import ru.prog.itmo.connection.ConnectionModule;
-import ru.prog.itmo.connection.InvalidConnectionException;
-import ru.prog.itmo.connection.Request;
-import ru.prog.itmo.connection.Response;
+import ru.prog.itmo.connection.*;
 import ru.prog.itmo.reader.Reader;
 import ru.prog.itmo.speaker.Speaker;
 
-import java.nio.ByteBuffer;
-
 public class PrintFieldDescendingHealthCommand extends ServerIOCommand {
-    public PrintFieldDescendingHealthCommand(ConnectionModule connectionModule, Speaker speaker, Reader reader) {
-        super("print_field_descending_health", connectionModule, speaker, reader);
+    public PrintFieldDescendingHealthCommand(SendModule sendModule,
+                                             ReceiveModule receiveModule,
+                                             Speaker speaker,
+                                             Reader reader) {
+        super("print_field_descending_health", sendModule, receiveModule, speaker, reader);
     }
 
     @Override
@@ -24,11 +22,8 @@ public class PrintFieldDescendingHealthCommand extends ServerIOCommand {
     public void execute() {
         super.execute();
         try {
-            Request<Object> request = new Request<>(COMMAND_TYPE, null);
-            ByteBuffer toServer = serializeRequest(request);
-            connectionModule().sendRequest(toServer);
-            ByteBuffer fromServer = connectionModule().receiveResponse();
-            Response<?> response = getDeserializedResponse(fromServer);
+            sendModule().submitSending(new Request<>(COMMAND_TYPE, null));
+            Response<?> response = receiveModule().getResponse();
             if (response.getData() != null)
                 speaker().speak((String) response.getData());
             else speaker().speak(response.getComment());

@@ -29,9 +29,7 @@ public class SpaceMarineScriptBuilder implements SpaceMarineBuilder {
     }
 
     public boolean setId() {
-        id = SpaceMarine.getUniqueId();
-        if (id < 0)
-            throw new InvalidScriptException("Возникли проблемы с id. Возможно вы вышли за пределы Java.");
+        id = 0;
         return true;
     }
 

@@ -1,24 +1,30 @@
 package ru.prog.itmo.command.remove;
 
-import ru.prog.itmo.command.ClientOCommand;
-import ru.prog.itmo.command.UserAsking;
-import ru.prog.itmo.connection.ConnectionModule;
+import ru.prog.itmo.command.ClientCommand;
+import ru.prog.itmo.connection.ConnectionManager;
 import ru.prog.itmo.connection.Response;
-import ru.prog.itmo.speaker.Speaker;
 import ru.prog.itmo.storage.Storage;
+import ru.prog.itmo.storage.StorageDBException;
 
-public class ClearCommand extends ClientOCommand implements UserAsking {
-    public ClearCommand(Storage storage, ConnectionModule connectionModule, Speaker speaker) {
-        super(storage, connectionModule, speaker);
+import java.net.SocketAddress;
+
+public class ClearCommand extends ClientCommand {
+    public ClearCommand(Storage storage, ConnectionManager connectionManager) {
+        super(storage, connectionManager);
     }
 
     @Override
-    public void execute() {
-        super.execute();
+    public void execute(SocketAddress address) {
+        super.execute(address);
         Response<String> response = new Response<>();
-        storage().clear();
-        response.setData("Коллекция очищена");
-        connectionModule().sendResponse(response);
+        try {
+            storage().clear(connectionManager().getRequestByAddress(address).getUser().getLogin());
+            response.setData("Из коллекции удалены все принадлежащие вам десантники.");
+        } catch (StorageDBException e){
+            response.setData("Не удалось удалить десантников из базы данных:\n" + e.getMessage());
+        } finally {
+            connectionManager().putResponse(address, response);
+        }
     }
 
     @Override

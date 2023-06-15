@@ -9,11 +9,7 @@ public abstract class StorageCommand extends AbstractServerCommand {
         this.storage = storage;
     }
 
-    @Override
-    public void execute() {
-    }
-
-    public Storage storage() {
+    public synchronized Storage storage() {
         return storage;
     }
 }

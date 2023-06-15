@@ -5,117 +5,97 @@ import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.core.LoggerContext;
-import ru.prog.itmo.command.Command;
-import ru.prog.itmo.connection.ConnectionModule;
+import ru.prog.itmo.connection.ConnectionManager;
 import ru.prog.itmo.connection.InvalidConnectionException;
-import ru.prog.itmo.connection.Request;
-import ru.prog.itmo.connection.Response;
-import ru.prog.itmo.reader.ConsoleReader;
-import ru.prog.itmo.reader.Reader;
 import ru.prog.itmo.speaker.ConsoleSpeaker;
 import ru.prog.itmo.speaker.Speaker;
-import ru.prog.itmo.storage.NotWritableFileException;
 import ru.prog.itmo.storage.Storage;
-import ru.prog.itmo.storage.WrongStorageFileException;
+import ru.prog.itmo.storage.StorageDBException;
+import ru.prog.itmo.storage.StorageDBFatalError;
+import ru.prog.itmo.storage.WrongDataBaseException;
 
 import java.io.File;
+import java.nio.file.Files;
+import java.nio.file.Path;
 
 
 public class ClientListener {
     private final ServerState serverState;
     protected ClientCommandsMap commandsMap;
-    protected final Speaker speaker;
-    private final Reader reader;
-    private ConnectionModule connectionModule;
+    private ConnectionManager connectionManager;
     private Storage storage;
-    private final static Logger LOGGER = LogManager.getLogger(ClientListener.class);
+    public static Logger LOGGER;
+    private static final String DEFAULT_LOG4J2_FILE = "log4j2.xml";
+    private static final String LOG_ENV = "LOGGER";
 
 
     public ClientListener() {
-        speaker = new ConsoleSpeaker();
-        reader = new ConsoleReader();
         serverState = new ServerState(true);
         try {
+            initLogger();
             storage = new Storage();
-            LOGGER.log(Level.INFO, "Файл успешно считан.");
-            connectionModule = new ConnectionModule();
-            commandsMap = new ClientCommandsMap(storage, connectionModule, serverState, speaker, reader);
-        } catch (WrongStorageFileException e) {
+            initConnectionAndCommandMap();
+        } catch (WrongDataBaseException | StorageDBException | InvalidConnectionException e) {
+            LOGGER.log(Level.ERROR, e.getMessage());
+            serverState.setWorkStatus(false);
+        } catch (LogException e) {
+            Speaker speaker = new ConsoleSpeaker();
             speaker.speak(e.getMessage());
-            LOGGER.log(Level.WARN, e.getMessage());
             serverState.setWorkStatus(false);
         }
-        addShutdownHook(storage, speaker);
-        setLogConfig();
     }
 
-    private void addShutdownHook(Storage storage, Speaker speaker){
-        Runtime.getRuntime().addShutdownHook(
-                new Thread(() -> {
-                    try {
-                        storage.getFile().save(storage);
-                    } catch (NotWritableFileException e) {
-                        speaker.speak("Не возможно записать в файл...");
-                    }
-                    speaker.speak("Файл сохранён...");
-                })
-        );
+    private void initConnectionAndCommandMap() {
+        connectionManager = new ConnectionManager(commandsMap, serverState, storage);
+        commandsMap = new ClientCommandsMap(storage, connectionManager);
+        connectionManager.setCommandMap(commandsMap);
     }
+
 
     public void run() {
-        speaker.speak("Ждём запрос клиента");
-        connectionModule.connect();
-        while (isWork()) {
-            try {
-                connectionModule.receiveRequest();
-                Request<?> request = connectionModule.getRequest();
-                String command = request.getCommandType();
-                speaker.speak(command);
-                LOGGER.log(Level.INFO, "Получен запрос на исполение команды " + command);
-                executeCommand(command);
-            } catch (InvalidConnectionException e) {
-                if (isWork()) {
-                    speaker.speak(e.getMessage());
-                    LOGGER.log(Level.WARN, e.getMessage());
-                    Response<String> response = new Response<>(e.getMessage());
-                    connectionModule.sendResponse(response);
-                }
-            }
+        try {
+            connectionManager.startModules();
+        } catch (StorageDBFatalError e) {
+            LOGGER.log(Level.ERROR, e);
+            LOGGER.log(Level.ERROR, "Требуется внешнее вмешательство");
         }
-    }
-
-    public void executeCommand(String commandName) {
-        Command command = commandsMap.getCommand(commandName);
-        command.execute();
-    }
-
-    public Speaker getSpeaker() {
-        return speaker;
-    }
-
-    public Reader getReader() {
-        return reader;
     }
 
     public ServerState getServerState() {
         return serverState;
     }
 
-    public ConnectionModule getConnectionModule() {
-        return connectionModule;
+    public ConnectionManager getConnectionModule() {
+        return connectionManager;
     }
 
     public Storage getStorage() {
         return storage;
     }
 
-    public boolean isWork() {
-        return serverState.isWorkStatus();
+    private void initLogger() {
+        String logFile = getLogFile();
+        initLogContext(logFile);
+        LOGGER = LogManager.getRootLogger();
     }
-    private void setLogConfig(){
-        String log4JFilePath = "C:\\Users\\Димон Покемон\\Desktop\\test\\log4j2.xml";
-        LoggerContext loggerContext = (LoggerContext) LogManager.getContext(false);
+
+    private String getLogFile() {
+        String logFile = System.getenv(LOG_ENV);
+        if (logFile == null) {
+            if (!Files.exists(Path.of(DEFAULT_LOG4J2_FILE)))
+                throw new LogException("Не задана переменная окружения LOGGER.");
+            logFile = DEFAULT_LOG4J2_FILE;
+        }
+        return logFile;
+    }
+
+    private void initLogContext(String log4JFilePath) {
+        var loggerContext = (LoggerContext) LogManager.getContext(false);
         File file = new File(log4JFilePath);
         loggerContext.setConfigLocation(file.toURI());
+    }
+
+    public ClientCommandsMap getCommandsMap() {
+        return commandsMap;
     }
 }

@@ -1,13 +1,17 @@
 package ru.prog.itmo.command.add;
 
 import ru.prog.itmo.command.UserAsking;
+import ru.prog.itmo.connection.ReceiveModule;
+import ru.prog.itmo.connection.SendModule;
 import ru.prog.itmo.reader.Reader;
-import ru.prog.itmo.connection.ConnectionModule;
 import ru.prog.itmo.speaker.Speaker;
 
 public class AddIfMinCommand extends AbstractAddCommand implements UserAsking {
-    public AddIfMinCommand(ConnectionModule connectionModule, Speaker speaker, Reader reader) {
-        super("add_if_min", connectionModule, speaker, reader);
+    public AddIfMinCommand(SendModule sendModule,
+                      ReceiveModule receiveModule,
+                      Speaker speaker,
+                      Reader reader) {
+        super("add_if_min", sendModule, receiveModule, speaker, reader);
     }
 
     @Override

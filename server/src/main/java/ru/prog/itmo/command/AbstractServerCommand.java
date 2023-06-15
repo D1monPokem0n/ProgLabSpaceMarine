@@ -1,8 +1,9 @@
 package ru.prog.itmo.command;
 
-public abstract class AbstractServerCommand implements Command{
-    @Override
-    public void execute() {
+import java.net.SocketAddress;
 
+public abstract class AbstractServerCommand{
+    public void execute(SocketAddress address) {
     }
+    public abstract String getDescription();
 }
