@@ -6,6 +6,7 @@ import ru.prog.itmo.command.authorization.LoginCancelledException;
 import ru.prog.itmo.command.authorization.LoginCommand;
 import ru.prog.itmo.command.authorization.NotAuthorizedException;
 import ru.prog.itmo.connection.*;
+import ru.prog.itmo.gui.SwingApp;
 import ru.prog.itmo.reader.ConsoleReader;
 import ru.prog.itmo.reader.InvalidCommandException;
 import ru.prog.itmo.reader.NoLineException;
@@ -122,6 +123,10 @@ public class Controller {
         this.connectionModule = connectionModule;
         this.sendModule = sendModule;
         this.receiveModule = receiveModule;
+    }
+
+    public void start(){
+        SwingApp.start();
     }
 
     public void run() {
