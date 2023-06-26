@@ -25,7 +25,7 @@ public abstract class AbstractAddCommand extends ServerIOCommand {
             SpaceMarineClientCreator creator = new SpaceMarineClientCreator(speaker(), reader());
             SpaceMarine marine = creator.create();
             marine.setOwnerUser(Controller.getUser().getLogin());
-            sendModule().submitSending(new Request<Object>(COMMAND_TYPE, marine));
+            sendModule().submitSending(new Request<>(COMMAND_TYPE, marine));
             Response<?> response = receiveModule().getResponse();
             if (response.getData() != null)
                 speaker().speak((String) response.getData());

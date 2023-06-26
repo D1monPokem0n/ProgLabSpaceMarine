@@ -6,7 +6,6 @@ public class Request<T> implements Serializable {
     private String commandType;
     private T data;
     private boolean isScriptCommand;
-    private String salt;
     private User user;
 
     public Request(String commandType, T data){
@@ -53,13 +52,5 @@ public class Request<T> implements Serializable {
 
     public User getUser() {
         return user;
-    }
-
-    public String getSalt() {
-        return salt;
-    }
-
-    public void setSalt(String salt) {
-        this.salt = salt;
     }
 }

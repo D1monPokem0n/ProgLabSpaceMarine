@@ -77,7 +77,7 @@ public class SpaceMarine implements Comparable<SpaceMarine>, Serializable {
         );
     }
 
-    public void setId(long id){
+    public void setId(long id) {
         this.id = id;
     }
 
@@ -103,6 +103,14 @@ public class SpaceMarine implements Comparable<SpaceMarine>, Serializable {
 
     public Coordinates getCoordinates() {
         return coordinates;
+    }
+
+    public float getCoordinatesX() {
+        return coordinates.getX();
+    }
+
+    public double getCoordinatesY() {
+        return coordinates.getY();
     }
 
     public int getHealth() {
@@ -137,7 +145,7 @@ public class SpaceMarine implements Comparable<SpaceMarine>, Serializable {
         this.meleeWeapon = meleeWeapon;
     }
 
-    public void setChapter(Chapter chapter){
+    public void setChapter(Chapter chapter) {
         this.chapter = chapter;
     }
 
@@ -168,6 +176,10 @@ public class SpaceMarine implements Comparable<SpaceMarine>, Serializable {
         }
     }
 
+    public static int getFieldsCount() {
+        return 14;
+    }
+
     @Override
     public int hashCode() {
         return 7 * super.hashCode() + 13 * Objects.hash(name, heartCount, category, meleeWeapon, chapter);
@@ -180,26 +192,41 @@ public class SpaceMarine implements Comparable<SpaceMarine>, Serializable {
         SpaceMarine other = (SpaceMarine) o;
         if (id == other.id) return true;
         return Objects.equals(name, other.name)
-                && Objects.equals(heartCount, other.heartCount)
-                && meleeWeapon == other.meleeWeapon
-                && category == other.category
-                && Objects.equals(chapter, other.chapter);
+               && Objects.equals(heartCount, other.heartCount)
+               && meleeWeapon == other.meleeWeapon
+               && category == other.category
+               && Objects.equals(chapter, other.chapter);
+    }
+
+    public String toLineString(){
+        String chapterString = chapter == null ? null : chapter.toString();
+        String categoryString = category == null ? null : category.getName();
+        return "[Id: " + id
+               + ",name: " + name
+               + ",coordinates: [" + coordinates.toString() + "]"
+               + ",CreationDate: " + creationDate.toString()
+               + ",health: " + health
+               + ",heartCount: " + heartCount
+               + ",category: " + categoryString
+               + ",meleeWeapon:" + meleeWeapon.getName()
+               + ",chapter:[" + chapterString + "]"
+               + ",ownerUser:" + ownerUser + "]";
     }
 
     @Override
     public String toString() {
         String chapterString = chapter == null ? null : chapter.toString();
         String categoryString = category == null ? null : category.getName();
-        return  "[Id: " + id
-                + ",\n name: " + name
-                + ",\n coordinates: [" + coordinates.toString() + "]"
-                + ",\n CreationDate: " + creationDate.toString()
-                + ",\n health: " + health
-                + ",\n heartCount: " + heartCount
-                + ",\n category: " + categoryString
-                + ",\n meleeWeapon:" + meleeWeapon.getName()
-                + ",\n chapter:[" + chapterString + "]"
-                + ",\n ownerUser:" + ownerUser + "]";
+        return "[Id: " + id
+               + ",\n name: " + name
+               + ",\n coordinates: [" + coordinates.toString() + "]"
+               + ",\n CreationDate: " + creationDate.toString()
+               + ",\n health: " + health
+               + ",\n heartCount: " + heartCount
+               + ",\n category: " + categoryString
+               + ",\n meleeWeapon:" + meleeWeapon.getName()
+               + ",\n chapter:[" + chapterString + "]"
+               + ",\n ownerUser:" + ownerUser + "]";
     }
 
     @Override

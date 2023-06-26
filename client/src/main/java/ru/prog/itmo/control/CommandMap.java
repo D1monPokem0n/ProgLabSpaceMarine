@@ -32,7 +32,7 @@ public class CommandMap {
     private final HashMap<String, Command> commandMap;
     private final Map<String, List<Command>> commandsRealizationsMap;
 
-    public CommandMap(Properties properties,
+    public CommandMap(/*Properties properties,*/
                       ConnectionModule connectionModule,
                       SendModule sendModule,
                       ReceiveModule receiveModule,
@@ -45,7 +45,7 @@ public class CommandMap {
         commandMap.put("add", new AddCommand(sendModule, receiveModule, speaker, reader));
         commandMap.put("add_if_min", new AddIfMinCommand(sendModule, receiveModule, speaker, reader));
         commandMap.put("clear", new ClearCommand(sendModule, receiveModule, speaker, reader));
-        commandMap.put("execute_script", new ExecuteScriptCommand(properties, connectionModule,sendModule, receiveModule, speaker, argument));
+        commandMap.put("execute_script", new ExecuteScriptCommand(/*properties, */connectionModule,sendModule, receiveModule, speaker, argument));
         commandMap.put("exit", new ExitCommand(clientState));
         commandMap.put("remove_any_by_chapter", new RemoveAnyByChapterCommand(sendModule, receiveModule, speaker, reader));
         commandMap.put("max_by_melee_weapon", new MaxByMeleeWeaponCommand(sendModule, receiveModule, speaker));
@@ -57,7 +57,7 @@ public class CommandMap {
         commandMap.put("remove_greater", new RemoveGreaterCommand(sendModule, receiveModule, speaker, reader));
         commandMap.put("show", new ShowCommand(sendModule, receiveModule, speaker));
         commandMap.put("update", new UpdateCommand(sendModule, receiveModule, argument, speaker, reader));
-        commandMap.put("log_out", new LogOutCommand(speaker));
+        commandMap.put("log_out", new LogOutCommand(speaker, clientState));
 
         commandsRealizationsMap = ofEntries(
                 entry("add", List.of(
@@ -72,7 +72,7 @@ public class CommandMap {
                         new ClearCommand(sendModule, receiveModule, speaker, reader),
                         new ClearScriptCommand(sendModule, receiveModule, speaker)
                 )),
-                entry("execute_script", List.of(new ExecuteScriptCommand(properties, connectionModule, sendModule, receiveModule, speaker, argument))),
+                entry("execute_script", List.of(new ExecuteScriptCommand(/*properties,*/ connectionModule, sendModule, receiveModule, speaker, argument))),
                 entry("exit", List.of(new ExitCommand(clientState))),
                 entry("remove_any_by_chapter", List.of(
                         new RemoveAnyByChapterCommand(sendModule, receiveModule, speaker, reader),
@@ -93,7 +93,7 @@ public class CommandMap {
                         new UpdateCommand(sendModule, receiveModule, argument, speaker, reader),
                         new UpdateScriptCommand(sendModule, receiveModule, argument, speaker, reader)
                 )),
-                entry("log_out", List.of(new LogOutCommand(speaker)))
+                entry("log_out", List.of(new LogOutCommand(speaker, clientState)))
         );
     }
 

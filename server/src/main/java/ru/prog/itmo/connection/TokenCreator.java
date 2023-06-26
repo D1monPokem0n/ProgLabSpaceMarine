@@ -9,8 +9,8 @@ import java.time.temporal.ChronoUnit;
 
 public class TokenCreator {
     private final Algorithm algorithm;
-    private static long REFRESH_TOKEN_LIFE_TIME = 60;
-    private static long ACCESS_TOKEN_LIFE_TIME = 30;
+    private static long REFRESH_TOKEN_LIFE_TIME = 18000;
+    private static long ACCESS_TOKEN_LIFE_TIME = 60;
     private static final String secretKey = "SJ#(а12&е$DF";
 
     public TokenCreator(){
@@ -29,10 +29,6 @@ public class TokenCreator {
             throw new InvalidTokenException("Не удалось создать токен");
         }
     }
-   /*
-
-    */
-
 
     public String createRefreshToken(String login){
         try {

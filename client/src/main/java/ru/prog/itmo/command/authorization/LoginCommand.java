@@ -2,6 +2,7 @@ package ru.prog.itmo.command.authorization;
 
 import ru.prog.itmo.command.ServerIOCommand;
 import ru.prog.itmo.connection.*;
+import ru.prog.itmo.control.ClientState;
 import ru.prog.itmo.control.Controller;
 import ru.prog.itmo.reader.Reader;
 import ru.prog.itmo.speaker.Speaker;
@@ -10,6 +11,8 @@ import java.util.Objects;
 
 public class LoginCommand extends ServerIOCommand {
 
+    private ClientState clientState;
+
     private static final String PEPPER = "SAC=*yStn]0ZRJ0X";
     private static final int MIN_PASSWORD_LENGTH = 4;
     private static final int MAX_PASSWORD_LENGTH = 50;
@@ -17,13 +20,18 @@ public class LoginCommand extends ServerIOCommand {
     private static final int MAX_LOGIN_LENGTH = 30;
 
 
-    public LoginCommand(SendModule sendModule, ReceiveModule receiveModule, Speaker speaker, Reader reader) {
+    public LoginCommand(SendModule sendModule,
+                        ReceiveModule receiveModule,
+                        ClientState clientState,
+                        Speaker speaker,
+                        Reader reader) {
         super("login", sendModule, receiveModule, speaker, reader);
+        this.clientState = clientState;
     }
 
     @Override
     public void execute() {
-        while (Controller.isNotLogged()) {
+        while (!clientState.isLogged()) {
             speaker().speak("Войдите в аккаунт или создайте новый.(login/register)(Для выхода из приложения введите exit)");
             String answer = reader().read();
             answer = answer == null ? "null" : answer;
@@ -37,12 +45,12 @@ public class LoginCommand extends ServerIOCommand {
     }
 
     private void login() {
-        while (Controller.isNotLogged()) {
+        while (!clientState.isLogged()) {
             speaker().speak("Введите логин:\n");
             var login = reader().read();
             if (isGoodLogin(login)) {
                 tryToFindUser(login);
-                if (Controller.isNotLogged()) {
+                if (!clientState.isLogged()) {
                     inputPassword(login);
                 }
             }
@@ -50,11 +58,11 @@ public class LoginCommand extends ServerIOCommand {
     }
 
     private void tryToFindUser(String login) {
-        var refreshToken = Controller.getProperties().get(login);
-        refreshToken = refreshToken == null ? "null" : refreshToken;
-        if (!refreshToken.equals("null")) {
-            setLoggedIfTokenValid(login, (String) refreshToken);
-        } else Controller.setIsLogged(false);
+//        var refreshToken = Controller.getProperties().get(login);
+//        refreshToken = refreshToken == null ? "null" : refreshToken;
+//        if (!refreshToken.equals("null")) {
+//            setLoggedIfTokenValid(login, (String) refreshToken);
+//        } else Controller.setIsLogged(false);
     }
 
     private void setLoggedIfTokenValid(String login, String refreshToken) {
@@ -64,14 +72,14 @@ public class LoginCommand extends ServerIOCommand {
         var response = receiveModule().getResponse();
         if ((Boolean) response.getData())
             setLoggedUser(response);
-        else Controller.setIsLogged(false);
+        else clientState.setLogged(false);
     }
 
     private void setLoggedUser(Response<?> response) {
         var user = Controller.getUser();
         user.setToken(response.getAccessToken());
         Controller.setRefreshToken(response.getRefreshToken());
-        Controller.setIsLogged(true);
+        clientState.setLogged(true);
     }
 
     private boolean isGoodLogin(String login) {
@@ -110,13 +118,13 @@ public class LoginCommand extends ServerIOCommand {
     }
 
     private void inputPassword(String login) {
-        for (int i = 0; i < 5 && Controller.isNotLogged(); i++) {
+        for (int i = 0; i < 5 && clientState.isLogged(); i++) {
             speaker().speak("Введите пароль:\n");
             var password = reader().read();
             if (isGoodPassword(password))
                 if (!checkUserExist(login, password)) break;
         }
-        if (Controller.isNotLogged()) speaker().speak("Авторизация провалена.");
+        if (clientState.isLogged()) speaker().speak("Авторизация провалена.");
     }
 
     private boolean checkUserExist(String login, String password) {
@@ -134,26 +142,25 @@ public class LoginCommand extends ServerIOCommand {
     }
 
     private void setUser(Response<?> response, User user) {
-        Controller.setIsLogged((Boolean) response.getData());
-        if (Controller.isNotLogged()) {
+        clientState.setLogged((Boolean) response.getData());
+        if (!clientState.isLogged()) {
             speaker().speak("Неверный пароль.");
         } else {
             user.setToken(response.getAccessToken());
             Controller.setUser(user);
             Controller.setRefreshToken(response.getRefreshToken());
-            Controller.setIsLogged(true);
+            clientState.setLogged(true);
         }
     }
 
     private void register() {
-        while (Controller.isNotLogged()) {
+        while (!clientState.isLogged()) {
             try {
                 speaker().speak("Введите логин:\n");
                 var login = reader().read();
                 if (isGoodLogin(login)) {
                     var password = newPassword();
-                    String salt = getRandomSalt();
-                    sendRegisterRequest(login, password, salt);
+                    sendRegisterRequest(login, password);
                 }
             } catch (InvalidUserException e) {
                 speaker().speak(e.getMessage());
@@ -161,10 +168,9 @@ public class LoginCommand extends ServerIOCommand {
         }
     }
 
-    private void sendRegisterRequest(String login, String password, String salt) {
+    private void sendRegisterRequest(String login, String password) {
         User user = new User(login, PEPPER + password);
         Request<User> request = new Request<>("register", user);
-        request.setSalt(salt);
         sendModule().submitSending(request);
         var response = receiveModule().getResponse();
         checkRegisterResponse(response, user);
@@ -178,7 +184,7 @@ public class LoginCommand extends ServerIOCommand {
             user.setToken(response.getAccessToken());
             Controller.setUser(user);
             Controller.setRefreshToken(response.getRefreshToken());
-            Controller.setIsLogged(true);
+            clientState.setLogged(true);
         }
     }
 
@@ -207,9 +213,7 @@ public class LoginCommand extends ServerIOCommand {
         throw new InvalidUserException();
     }
 
-    private String getRandomSalt() {
-        return java.util.UUID.randomUUID().toString();
-    }
+
 
     @Override
     public String getDescription() {

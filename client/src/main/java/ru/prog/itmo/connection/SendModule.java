@@ -12,6 +12,7 @@ import java.net.InetAddress;
 import java.nio.ByteBuffer;
 import java.util.Objects;
 
+
 public class SendModule {
     private DatagramSocket socket;
     private InetAddress host;
@@ -20,28 +21,29 @@ public class SendModule {
     private static final int DEFAULT_PORT = 31725;
     private static final String ENV_PORT = "SERVER_PORT";
 
-    public SendModule(DatagramSocket socket, InetAddress host, Speaker speaker){
+    public SendModule(DatagramSocket socket, InetAddress host, Speaker speaker) {
         this.socket = socket;
         this.host = host;
         this.speaker = speaker;
         setPort();
     }
 
-    private void setPort(){
+    private void setPort() {
         try {
             var envPort = System.getenv(ENV_PORT);
             if (Objects.isNull(envPort)) {
                 speaker.speak("Задан стандартный порт серва: " + DEFAULT_PORT);
                 port = DEFAULT_PORT;
             } else port = Integer.parseInt(envPort);
-        } catch (NumberFormatException | NullPointerException e){
+        } catch (NumberFormatException | NullPointerException e) {
             throw new InvalidConnectionException("Не задана переменная окружения SERVER_PORT." +
                                                  "Задайте порт сервера.");
         }
     }
 
 
-    public void submitSending(Request<?> request){
+
+    public synchronized void submitSending(Request<?> request) {
         request.setUser(Controller.getUser());
         ByteBuffer toServer = serializeRequest(request);
         sendRequest(toServer);

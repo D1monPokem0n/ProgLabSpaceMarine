@@ -22,33 +22,6 @@ public class Chapter implements Comparable<Chapter>, Serializable {
         world = "Earth";
     }
 
-    @Override
-    public String toString() {
-        return "Chapter_name:" + name + ",parentLegion:" + parentLegion + ",marinesCount:" + marinesCount + ",world:" + world;
-    }
-
-    @Override
-    public boolean equals(Object obj) {
-        if (this == obj) return true;
-        if (getClass() != obj.getClass()) return false;
-        Chapter other = (Chapter) obj;
-        return name.equals(other.name)
-                && Objects.equals(marinesCount, other.marinesCount);
-    }
-
-    @Override
-    public int compareTo(Chapter o) {
-        if (name.compareTo(o.name) != 0) return name.compareTo(o.name);
-        return marinesCount.compareTo(o.marinesCount);
-    }
-
-
-
-    @Override
-    public int hashCode() {
-        return super.hashCode() * Objects.hash(name, marinesCount);
-    }
-
     public String getName() {
         return name;
     }
@@ -79,5 +52,30 @@ public class Chapter implements Comparable<Chapter>, Serializable {
 
     public void setWorld(String world) {
         this.world = world;
+    }
+
+    @Override
+    public int compareTo(Chapter o) {
+        if (name.compareTo(o.name) != 0) return name.compareTo(o.name);
+        return marinesCount.compareTo(o.marinesCount);
+    }
+
+    @Override
+    public String toString() {
+        return "Chapter_name:" + name + ",parentLegion:" + parentLegion + ",marinesCount:" + marinesCount + ",world:" + world;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) return true;
+        if (getClass() != obj.getClass()) return false;
+        Chapter other = (Chapter) obj;
+        return name.equals(other.name)
+               && Objects.equals(marinesCount, other.marinesCount);
+    }
+
+    @Override
+    public int hashCode() {
+        return super.hashCode() * Objects.hash(name, marinesCount);
     }
 }

@@ -1,7 +1,6 @@
 package ru.prog.itmo.connection;
 
-import ru.prog.itmo.command.authorization.NotAuthorizedException;
-
+import javax.swing.*;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -21,11 +20,17 @@ public class ReceiveModule {
         this.socket = socket;
     }
 
-    public Response<?> getResponse(){
+    public synchronized Response<?> getResponse(){
         ByteBuffer fromServer = receiveResponse();
         var response = deserializeResponse(fromServer);
-        if (response.isNotAuthorized()) throw new NotAuthorizedException("Пользователь не авторизован");
+        if (response.isNotAuthorized())
+            exit();
         return deserializeResponse(fromServer);
+    }
+
+    private void exit(){
+        JOptionPane.showMessageDialog(null, "You need to re-sign in to the app");
+        System.exit(0);
     }
 
     private ByteBuffer receiveResponse() {

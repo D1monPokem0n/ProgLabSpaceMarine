@@ -60,8 +60,8 @@ public class UpdateCommand extends ServerIOCommand implements UserAsking {
 
     private void executeUpdateRequest(SpaceMarine searchableMarine){
         sendModule().submitSending(new Request<>(COMMAND_TYPE, searchableMarine));
-        Response<?> response2 = receiveModule().getResponse();
-        speaker().speak((String) response2.getData());
+        Response<?> response = receiveModule().getResponse();
+        speaker().speak((String) response.getData());
     }
 
     private void executeUpdate(SpaceMarine searchableMarine){
@@ -113,7 +113,7 @@ public class UpdateCommand extends ServerIOCommand implements UserAsking {
     private void checkSearchableMarine(SpaceMarine searchableMarine, Response<?> response){
         if (searchableMarine == null)
             throw new InvalidSpaceMarineValueException(response.getComment());
-        if (searchableMarine.getOwnerUser().equals(Controller.getUser().getLogin()))
+        if (!searchableMarine.getOwnerUser().equals(Controller.getUser().getLogin()))
             throw new CreateCancelledException("Десантник не принадлежит вам.");
     }
 

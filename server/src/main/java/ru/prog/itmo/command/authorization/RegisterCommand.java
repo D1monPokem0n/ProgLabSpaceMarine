@@ -20,7 +20,7 @@ public class RegisterCommand extends ClientCommand {
         Response<String> response = new Response<>();
         User newUser = (User) request.getData();
         try {
-            storage().addNewUser(newUser, request.getSalt());
+            storage().addNewUser(newUser, getRandomSalt());
             setTokens(response, newUser);
         } catch (InvalidUserException e) {
             response.setComment(e.getMessage());
@@ -35,6 +35,10 @@ public class RegisterCommand extends ClientCommand {
         var refreshToken = tokenCreator.createRefreshToken(newUser.getLogin());
         storage().updateRefreshToken(newUser.getLogin(), refreshToken);
         response.setRefreshToken(refreshToken);
+    }
+
+    private String getRandomSalt() {
+        return java.util.UUID.randomUUID().toString();
     }
 
     @Override

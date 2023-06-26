@@ -1,7 +1,7 @@
 package ru.prog.itmo.control;
 
-import ru.prog.itmo.command.authorization.LogOutException;
 import ru.prog.itmo.command.Command;
+import ru.prog.itmo.command.authorization.LogOutException;
 import ru.prog.itmo.command.authorization.LoginCancelledException;
 import ru.prog.itmo.command.authorization.LoginCommand;
 import ru.prog.itmo.command.authorization.NotAuthorizedException;
@@ -14,14 +14,10 @@ import ru.prog.itmo.reader.Reader;
 import ru.prog.itmo.speaker.ConsoleSpeaker;
 import ru.prog.itmo.speaker.Speaker;
 
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.util.LinkedList;
-import java.util.Objects;
-import java.util.Properties;
+import javax.swing.*;
+import java.awt.*;
+import java.util.*;
+import java.util.concurrent.TimeUnit;
 
 public class Controller {
     protected CommandMap commandMap;
@@ -31,14 +27,21 @@ public class Controller {
     protected CommandReader commandReader;
     protected ConnectionModule connectionModule;
     protected SendModule sendModule;
+    private SwingApp swingApp;
     protected ReceiveModule receiveModule;
-    protected static Properties properties;
+    private static final Map<String, Locale> locales = Map.ofEntries(
+            Map.entry("russian", new Locale("ru", "RU")),
+            Map.entry("spain", new Locale("sp", "GCA")),
+            Map.entry("bulgarian", new Locale("bg", "BG")),
+            Map.entry("macedonian", new Locale("ma", "MA")),
+            Map.entry("english", new Locale("en", "EN")));
+    private static ResourceBundle messages;
     private final ClientState clientState;
     private final LinkedList<String> lastCommands;
-    private static boolean isLogged;
+    //    private static boolean isLogged;
     private static User user;
     private static String refreshToken;
-    private static final Path TOKEN_FILE = Path.of("users.token");
+//    private static final Path TOKEN_FILE = Path.of("users.token");
 
     public Controller() {
         argument = new ConsoleArgument();
@@ -47,9 +50,9 @@ public class Controller {
         clientState = new ClientState(true);
         try {
             initConnection(speaker);
-            loadTokens();
+//            loadTokens();
             commandMap = new CommandMap(
-                    properties,
+//                    properties,
                     connectionModule,
                     sendModule,
                     receiveModule,
@@ -59,7 +62,7 @@ public class Controller {
                     speaker,
                     reader
             );
-        } catch (InvalidConnectionException | IOException e) {
+        } catch (InvalidConnectionException e) {
             clientState.setWorkStatus(false);
             speaker.speak(e.getMessage());
         }
@@ -77,28 +80,28 @@ public class Controller {
         receiveModule = new ReceiveModule(connectionModule.getSocket());
     }
 
-    private void loadTokens() throws IOException {
-        if (!Files.exists(TOKEN_FILE)) {
-            speaker.speak("Created users.token");
-            Files.createFile(TOKEN_FILE);
-        }
-        properties = new Properties();
-        properties.load(new FileInputStream(TOKEN_FILE.toFile()));
-    }
+//    private void loadTokens() throws IOException {
+//        if (!Files.exists(TOKEN_FILE)) {
+//            speaker.speak("Created users.token");
+//            Files.createFile(TOKEN_FILE);
+//        }
+//        properties = new Properties();
+//        properties.load(new FileInputStream(TOKEN_FILE.toFile()));
+//    }
 
-    public Controller(Properties properties,
-                      ConnectionModule connectionModule,
-                      SendModule sendModule,
-                      ReceiveModule receiveModule,
-                      Speaker speaker,
-                      Reader reader) {
-        initConnection(properties, connectionModule, sendModule, receiveModule);
+    public Controller(/*Properties properties,*/
+            ConnectionModule connectionModule,
+            SendModule sendModule,
+            ReceiveModule receiveModule,
+            Speaker speaker,
+            Reader reader) {
+        initConnection(/*properties,*/ connectionModule, sendModule, receiveModule);
         ConsoleArgument argument = new ConsoleArgument();
         initSpeakAndRead(speaker, reader, argument);
         clientState = new ClientState(true);
         lastCommands = new LinkedList<>();
         commandMap = new CommandMap(
-                properties,
+//                properties,
                 connectionModule,
                 sendModule,
                 receiveModule,
@@ -115,18 +118,38 @@ public class Controller {
         commandReader = new CommandReader(reader, argument);
     }
 
-    private void initConnection(Properties properties,
+    private void initConnection(//Properties properties,
                                 ConnectionModule connectionModule,
                                 SendModule sendModule,
                                 ReceiveModule receiveModule) {
-        Controller.properties = properties;
+//        Controller.properties = properties;
         this.connectionModule = connectionModule;
         this.sendModule = sendModule;
         this.receiveModule = receiveModule;
     }
 
-    public void start(){
-        SwingApp.start();
+    public void start() {
+//        Controller.setLocale("russian");
+        connect();
+        var guiSpeaker = new SmartSpeaker();
+        var commandManager = new CommandManager(sendModule, receiveModule, commandMap, guiSpeaker, argument);
+        startRefreshThread();
+        EventQueue.invokeLater(() -> swingApp = new SwingApp(commandManager, guiSpeaker, clientState));
+    }
+
+    private void startRefreshThread() {
+        var thread = new Thread(() -> {
+            try {
+                while (isWork()) {
+                    if (clientState.isLogged())
+                        repeatLogin();
+                    TimeUnit.SECONDS.sleep(11);
+                }
+            } catch (InterruptedException | InvalidConnectionException e) {
+                JOptionPane.showMessageDialog(null, "Oops...");
+            }
+        });
+        thread.start();
     }
 
     public void run() {
@@ -138,9 +161,9 @@ public class Controller {
                 } catch (InvalidCommandException e) {
                     speaker.speak(e.getMessage());
                 } catch (NotAuthorizedException e) {
-                    isLogged = false;
+                    clientState.setLogged(false);
                     repeatLogin();
-                } catch (LogOutException e){
+                } catch (LogOutException e) {
                     login();
                 }
             }
@@ -149,7 +172,7 @@ public class Controller {
             clientState.setWorkStatus(false);
         } catch (LoginCancelledException e) {
             clientState.setWorkStatus(false);
-        } catch (NoLineException e){
+        } catch (NoLineException e) {
             speaker.speak("Завершение...");
         } catch (NotAuthorizedException e) {
             speaker.speak("Проблемы с соединением...");
@@ -177,7 +200,7 @@ public class Controller {
     }
 
     private void login() {
-        LoginCommand loginCommand = new LoginCommand(sendModule, receiveModule, speaker, reader);
+        LoginCommand loginCommand = new LoginCommand(sendModule, receiveModule, clientState, speaker, reader);
         loginCommand.execute();
     }
 
@@ -197,10 +220,10 @@ public class Controller {
     private void returnToProgram(Response<?> response) {
         setRefreshToken(response.getRefreshToken());
         user.setToken(response.getAccessToken());
-        var lastCommand = lastCommands.getLast();
-        speaker.speak("Была произведена повторная аутентификация.\n" + lastCommand);
-        if (!lastCommand.equals("execute_script"))
-            executeCommand(lastCommand);
+//        var lastCommand = lastCommands.getLast();
+//        speaker.speak("Была произведена повторная аутентификация.\n" + lastCommand);
+//        if (!lastCommand.equals("execute_script"))
+//            executeCommand(lastCommand);
     }
 
     public void executeCommand(String commandName) {
@@ -227,30 +250,38 @@ public class Controller {
     public static void setRefreshToken(String refreshToken) {
         refreshToken = Objects.isNull(refreshToken) ? "null" : refreshToken;
         Controller.refreshToken = refreshToken;
-        properties.setProperty(user.getLogin(), refreshToken);
-        try (var outputStream = new FileOutputStream(TOKEN_FILE.toFile())) {
-            properties.store(outputStream, "=)");
-        } catch (IOException e) {
-            throw new InvalidUserException("Проблемы с файлом для токенов.");
-        }
+//        properties.setProperty(user.getLogin(), refreshToken);
+//        try (var outputStream = new FileOutputStream(TOKEN_FILE.toFile())) {
+//            properties.store(outputStream, "=)");
+//        } catch (IOException e) {
+//            throw new InvalidUserException("Проблемы с файлом для токенов.");
+//        }
 
     }
 
-    public static void clearUserInfo(){
+    public static void clearUserInfo() {
         user = null;
         refreshToken = null;
     }
 
-
-    public static Properties getProperties() {
-        return properties;
+    public static void setLocale(String lang){
+        messages = ResourceBundle.getBundle("Messages", locales.get(lang));
+    }
+//
+    public static ResourceBundle messages(){
+        if (messages == null) setLocale("russian");
+        return messages;
     }
 
-    public static void setIsLogged(boolean isLogged) {
-        Controller.isLogged = isLogged;
-    }
+//    public static Properties getProperties() {
+//        return properties;
+//    }
 
-    public static boolean isNotLogged() {
-        return !isLogged;
-    }
+//    public static void setIsLogged(boolean isLogged) {
+//        Controller.isLogged = isLogged;
+//    }
+//
+//    public static boolean isNotLogged() {
+//        return !isLogged;
+//    }
 }

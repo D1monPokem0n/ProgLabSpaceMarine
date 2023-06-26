@@ -16,6 +16,7 @@ import ru.prog.itmo.reader.Reader;
 import ru.prog.itmo.spacemarine.builder.script.InvalidScriptException;
 import ru.prog.itmo.speaker.Speaker;
 
+import javax.swing.*;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -25,15 +26,15 @@ import java.nio.file.InvalidPathException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
-import java.util.Properties;
+import java.util.concurrent.TimeUnit;
 
 public class ExecuteScriptCommand extends ServerOCommand {
-    private final Properties properties;
+//    private final Properties properties;
     private final ConsoleArgument argument;
     private final ConnectionModule connectionModule;
     public static ArrayList<Path> startedScripts = new ArrayList<>();
 
-    public ExecuteScriptCommand(Properties properties,
+    public ExecuteScriptCommand(/*Properties properties,*/
                                 ConnectionModule connectionModule,
                                 SendModule sendModule,
                                 ReceiveModule receiveModule,
@@ -42,7 +43,7 @@ public class ExecuteScriptCommand extends ServerOCommand {
         super("execute_script", sendModule, receiveModule, speaker);
         this.argument = argument;
         this.connectionModule = connectionModule;
-        this.properties = properties;
+//        this.properties = properties;
     }
 
     @Override
@@ -77,7 +78,7 @@ public class ExecuteScriptCommand extends ServerOCommand {
         InputStreamReader inputStream = new InputStreamReader(fileStream);
         ScriptReader scriptReader = new ScriptReader(speaker(), inputStream);
         return new MicroController(
-                properties,
+//                properties,
                 connectionModule,
                 sendModule(),
                 receiveModule(),
@@ -103,13 +104,13 @@ public class ExecuteScriptCommand extends ServerOCommand {
     }
 
     static class MicroController extends Controller {
-        public MicroController(Properties properties,
+        public MicroController(/*Properties properties,*/
                                 ConnectionModule connectionModule,
                                SendModule sendModule,
                                ReceiveModule receiveModule,
                                Speaker speaker,
                                Reader reader) {
-            super(properties, connectionModule, sendModule, receiveModule, speaker, reader);
+            super(/*properties,*/ connectionModule, sendModule, receiveModule, speaker, reader);
             for (String key : commandMap.getCommandHashMap().keySet()) {
                 if (commandMap.getCommand(key) instanceof UserAsking) {
                     for (Command realization : commandMap.getCommandsRealizationsMap().get(key)) {
@@ -126,10 +127,13 @@ public class ExecuteScriptCommand extends ServerOCommand {
             String commandName;
             while (isWork()) {
                 try {
-                    commandName = commandReader.read();
-                    executeCommand(commandName);
-                } catch (InvalidCommandException e) {
-                    throw new InvalidScriptException(e.getMessage());
+                    synchronized (sendModule) {
+                        commandName = commandReader.read();
+                        executeCommand(commandName);
+                    }
+                    TimeUnit.SECONDS.sleep(1);
+                } catch (InvalidCommandException | InterruptedException e) {
+                    JOptionPane.showMessageDialog(null, "Oops.");
                 }
             }
         }

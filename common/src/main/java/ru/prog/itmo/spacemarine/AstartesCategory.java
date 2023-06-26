@@ -15,6 +15,13 @@ public enum AstartesCategory implements Serializable {
         this.name = name;
     }
 
+    public static int comparing(AstartesCategory a1, AstartesCategory a2) {
+        if (a1 == null && a2 == null) return 0;
+        if (a2 == null) return 1;
+        if (a1 == null) return -1;
+        return a1.compareTo(a2);
+    }
+
     public String getName() {
         return name;
     }

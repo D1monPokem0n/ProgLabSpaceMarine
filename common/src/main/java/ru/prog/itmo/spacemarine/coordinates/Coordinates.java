@@ -11,11 +11,6 @@ public class Coordinates implements Serializable {
         this.y = y;
     }
 
-    @Override
-    public String toString() {
-        return "Coordinate_x:" + x + ",Coordinate_y:" + y;
-    }
-
     public void setX(Float x) {
         this.x = x;
     }
@@ -30,5 +25,10 @@ public class Coordinates implements Serializable {
 
     public Double getY() {
         return y;
+    }
+
+    @Override
+    public String toString() {
+        return "Coordinate_x:" + x + ",Coordinate_y:" + y;
     }
 }

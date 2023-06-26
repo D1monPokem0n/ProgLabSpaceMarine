@@ -20,7 +20,7 @@ public class SendModule {
     private static final byte STOP_BYTE = 0x60;
     private static final byte CONTINUE_BYTE = 0x4E;
     public static final int PACKET_SIZE = 4096;
-    public static final int PAUSE_BETWEEN_SENDING = 20;
+    public static final int PAUSE_BETWEEN_SENDING = 1;
 
     public SendModule(ConcurrentHashMap<SocketAddress, Response<?>> responseMap) {
         this.responseMap = responseMap;
