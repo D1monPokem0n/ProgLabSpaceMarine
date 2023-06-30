@@ -23,15 +23,16 @@ public class AddCommand extends ClientCommand implements UserAsking {
         try {
             Request<?> request = connectionManager().getRequestByAddress(address);
             SpaceMarine marineToAdd = (SpaceMarine) request.getData();
-            if (storage().contains(marineToAdd)){
+            if (storage().contains(marineToAdd)) {
                 response.setData("В хранилище уже есть такой десантник.");
             } else {
                 storage().add(marineToAdd);
+                connectionManager().setHaveUpdates();
                 response.setData("Десантник успешно добавлен\n" + marineToAdd);
             }
-        } catch (ClassCastException e){
+        } catch (ClassCastException e) {
             response.setComment("Некорректный запрос.");
-        } catch (StorageDBException e){
+        } catch (StorageDBException e) {
             response.setComment(e.getMessage());
         } finally {
             connectionManager().putResponse(address, response);

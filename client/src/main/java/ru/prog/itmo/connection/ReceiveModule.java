@@ -10,6 +10,9 @@ import java.net.DatagramSocket;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.Executors;
 
 public class ReceiveModule {
     private DatagramSocket socket;
@@ -18,17 +21,56 @@ public class ReceiveModule {
 
     public ReceiveModule(DatagramSocket socket) {
         this.socket = socket;
+        var threadExecutor = Executors.newSingleThreadExecutor();
+        threadExecutor.submit(this::listenResponses);
     }
 
-    public synchronized Response<?> getResponse(){
-        ByteBuffer fromServer = receiveResponse();
-        var response = deserializeResponse(fromServer);
-        if (response.isNotAuthorized())
-            exit();
-        return deserializeResponse(fromServer);
+    /**
+     * TIM's CODE UPDATES
+     */
+
+    BlockingQueue<Response<?>> notUpdatesResponses = new ArrayBlockingQueue<Response<?>>(100);
+    BlockingQueue<Response<?>> updatesResponses = new ArrayBlockingQueue<Response<?>>(100);
+
+    public Response<?> getResponse() {
+        try {
+            return notUpdatesResponses.take();
+        } catch (InterruptedException e) {
+            // TODO: написать обработчик
+            throw new RuntimeException(e);
+        }
     }
 
-    private void exit(){
+    public Response<?> getNotUpdatesResponse() {
+        try {
+            return updatesResponses.take();
+        } catch (InterruptedException e) {
+            // TODO: написать обработчик
+            throw new RuntimeException(e);
+        }
+    }
+
+
+    public void listenResponses() {
+        while (true) {
+            try {
+                ByteBuffer fromServer = receiveResponse();
+                var response = deserializeResponse(fromServer);
+                if (response == null) continue;
+                if (response.isNotAuthorized())
+                    exit();
+                if (response.isUpdates()) {
+                    updatesResponses.add(response);
+                } else {
+                    notUpdatesResponses.add(response);
+                }
+            }  catch (Exception e) {
+                //
+            }
+        }
+    }
+
+    private void exit() {
         JOptionPane.showMessageDialog(null, "You need to re-sign in to the app");
         System.exit(0);
     }

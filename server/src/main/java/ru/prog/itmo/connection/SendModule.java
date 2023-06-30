@@ -27,6 +27,13 @@ public class SendModule {
         isNotShutdown = true;
     }
 
+    public void submitSendTask(SocketAddress address) {
+        if (isNotShutdown) {
+            var sendThread = new Thread(sendTask(address));
+            sendThread.start();
+        }
+    }
+
     public void submitSendTask(Future<SocketAddress> task) {
         try {
             SocketAddress address = task.get();

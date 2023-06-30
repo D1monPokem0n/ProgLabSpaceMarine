@@ -1,6 +1,5 @@
 package ru.prog.itmo.gui;
 
-import ru.prog.itmo.connection.InvalidConnectionException;
 import ru.prog.itmo.control.ClientState;
 import ru.prog.itmo.control.CommandManager;
 import ru.prog.itmo.control.Controller;
@@ -8,7 +7,6 @@ import ru.prog.itmo.speaker.Speaker;
 
 import javax.swing.*;
 import java.awt.*;
-import java.util.concurrent.TimeUnit;
 
 public class MainFrame extends JFrame {
     private JPanel leftUpPanel;
@@ -24,31 +22,30 @@ public class MainFrame extends JFrame {
     private CommandManager commandManager;
 
 
-
     public MainFrame(CommandManager commandManager, Speaker speaker, ClientState clientState) {
         initFrame(commandManager, speaker, clientState);
         setComponents();
         addComponents();
         setVisible(true);
-        startRefreshTable();
+//        startRefreshTable();
     }
 
-    private void startRefreshTable() {
-        var updateThread = new Thread(() -> {
-            while (clientState.isWorkStatus()) {
-                try {
-                    TimeUnit.SECONDS.sleep(1);
-                    var marines = commandManager.executeShowCommand();
-                    store.setMarines(marines);
-                    repaint();
-                    rightDownPanel.repaint();
-                } catch (InterruptedException | InvalidConnectionException e) {
-                    JOptionPane.showMessageDialog(this, speaker.speak("Some mistakes..."));
-                }
-            }
-        }
-        );
-        updateThread.start();
+    public void refresh() {
+//        var updateThread = new Thread(() -> {
+//            while (clientState.isWorkStatus()) {
+//                try {
+//                    TimeUnit.SECONDS.sleep(1);
+        var marines = commandManager.executeShowCommand();
+        store.setMarines(marines);
+        repaint();
+        rightDownPanel.repaint();
+//                } catch (InterruptedException | InvalidConnectionException e) {
+//                    JOptionPane.showMessageDialog(this, speaker.speak("Some mistakes..."));
+//                }
+//            }
+//        }
+//        );
+//        updateThread.start();
     }
 
     private void initFrame(CommandManager commandManager, Speaker speaker, ClientState clientState) {
@@ -80,7 +77,7 @@ public class MainFrame extends JFrame {
 //        setJMenuBar(menuBar);
     }
 
-    private GridBagConstraints getSortConstraints(){
+    private GridBagConstraints getSortConstraints() {
         return new GBC(1, 0, 1, 1)
                 .setWeight(100, 100)
                 .setAnchor(GridBagConstraints.CENTER)
@@ -126,7 +123,7 @@ public class MainFrame extends JFrame {
     }
 
     private SortPanel getSortPanel() {
-        var panel = new SortPanel(store, speaker);
+        var panel = new SortPanel(store, speaker, this);
         panel.setMinimumSize(new Dimension(220, 300));
         panel.setPreferredSize(new Dimension(220, 300));
         panel.setMinimumSize(new Dimension(230, 310));

@@ -14,6 +14,7 @@ public class ClientRequestsHandler {
     private ClientCommandsMap commandMap;
     private final TokenValidator tokenValidator;
     private final Storage storage;
+    private final ConcurrentLinkedQueue<SocketAddress> clients;
     private final ConcurrentHashMap<SocketAddress, Request<?>> requestMap;
     private final ConcurrentHashMap<SocketAddress, Response<?>> responseMap;
     private final ExecutorService handleExecutor;
@@ -25,12 +26,14 @@ public class ClientRequestsHandler {
                                  Storage storage,
                                  ConcurrentHashMap<SocketAddress, Request<?>> requestMap,
                                  ConcurrentHashMap<SocketAddress, Response<?>> responseMap,
-                                 SendModule sendModule) {
+                                 SendModule sendModule,
+                                 ConcurrentLinkedQueue<SocketAddress> clients) {
         this.commandMap = commandMap;
         this.storage = storage;
         this.requestMap = requestMap;
         this.responseMap = responseMap;
         this.sendModule = sendModule;
+        this.clients = clients;
         handleExecutor = Executors.newFixedThreadPool(HANDLE_THREADS_COUNT);
         this.tokenValidator = new TokenValidator();
     }
@@ -52,15 +55,25 @@ public class ClientRequestsHandler {
         return () -> {
             Request<?> request = requestMap.get(address);
             String commandName = request.getCommandType();
-            if (validUser(request.getUser(), commandName)) {
-                LOGGER.log(Level.INFO, "Пользователь " + request.getUser().getLogin() + " прошёл валидацию.");
-                commandMap.getCommand(commandName).execute(address);
+            if (validateUser(request.getUser(), commandName)) {
+                serveAuthorizedUser(request, commandName, address);
             } else {
                 LOGGER.log(Level.INFO, "Пользователь " + request.getUser().getLogin() + " не прошёл валидацию.");
                 kickNotAuthorizedUser(address);
             }
             return address;
         };
+    }
+
+    private void serveAuthorizedUser(Request<?> request, String commandName, SocketAddress address) {
+        LOGGER.log(Level.INFO, "Пользователь " + request.getUser().getLogin() + " прошёл валидацию.");
+//        if (commandName.equals("listen")) {
+        if (!clients.contains(address)) {
+            LOGGER.log(Level.INFO,"Новый пол трансегденред");
+            clients.add(address);
+        }
+//        }
+        commandMap.getCommand(commandName).execute(address);
     }
 
     private void kickNotAuthorizedUser(SocketAddress address) {
@@ -70,7 +83,7 @@ public class ClientRequestsHandler {
         responseMap.put(address, response);
     }
 
-    private boolean validUser(User user, String commandName) {
+    private boolean validateUser(User user, String commandName) {
         if (Pattern.matches(LOGIN_COMMANDS_PATTERN, commandName))
             return true;
         String token = user.getToken();

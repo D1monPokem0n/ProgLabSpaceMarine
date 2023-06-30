@@ -34,6 +34,10 @@ public class SwingApp {
         inputMap.put(KeyStroke.getKeyStroke("released ENTER"), releasedAction);
     }
 
+    public void setHasUpdates(){
+        mainFrame.refresh();
+    }
+
     private void login() {
         authorizationFrame = new AuthorizationFrame(commandManager, speaker, this, clientState);
         authorizationFrame.setTitle("Authorization Form");

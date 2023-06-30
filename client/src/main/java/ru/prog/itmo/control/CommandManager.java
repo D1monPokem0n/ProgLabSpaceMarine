@@ -164,7 +164,7 @@ public class CommandManager {
     }
 
     public void executeScript(Path filePath) {
-        var scriptThread = new Thread(()->{
+        var scriptThread = new Thread(() -> {
             argument.setArgument(String.valueOf(filePath));
             commandMap.getCommand("execute_script").execute();
             JOptionPane.showMessageDialog(null, speaker.speak("Script finished."));

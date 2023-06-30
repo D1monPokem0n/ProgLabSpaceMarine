@@ -10,7 +10,7 @@ import java.time.temporal.ChronoUnit;
 public class TokenCreator {
     private final Algorithm algorithm;
     private static long REFRESH_TOKEN_LIFE_TIME = 18000;
-    private static long ACCESS_TOKEN_LIFE_TIME = 60;
+    private static long ACCESS_TOKEN_LIFE_TIME = 6000;
     private static final String secretKey = "SJ#(а12&е$DF";
 
     public TokenCreator(){

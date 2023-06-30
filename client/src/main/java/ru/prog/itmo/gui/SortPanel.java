@@ -17,10 +17,11 @@ public class SortPanel extends JPanel implements ActionListener {
     private JButton findButton;
     private JComboBox<String> sortComboBox;
     private JCheckBox reversedSortBox;
+    private MainFrame mainFrame;
 
-    public SortPanel(Store store, Speaker speaker) {
+    public SortPanel(Store store, Speaker speaker, MainFrame mainFrame) {
         initFrame();
-        initComponents(store, speaker);
+        initComponents(store, speaker, mainFrame);
         setSizes();
         addComponents();
         addEvents();
@@ -43,7 +44,7 @@ public class SortPanel extends JPanel implements ActionListener {
         reversedSortBox.setBounds(120, 120, 25, 25);
         applyButton.setBounds(40, 210, 70, 30);
         filterTextFiled.setBounds(10, 250, 100, 25);
-        filterTextFiled.setMinimumSize(new Dimension(100,25));
+        filterTextFiled.setMinimumSize(new Dimension(100, 25));
         filterTextFiled.setPreferredSize(new Dimension(100, 25));
         filterTextFiled.setMaximumSize(new Dimension(100, 25));
         findButton.setBounds(130, 250, 100, 300);
@@ -69,9 +70,10 @@ public class SortPanel extends JPanel implements ActionListener {
 //        add(apply,BorderLayout.CENTER);
     }
 
-    private void initComponents(Store store, Speaker speaker) {
+    private void initComponents(Store store, Speaker speaker, MainFrame mainFrame) {
         this.store = store;
         this.speaker = speaker;
+        this.mainFrame = mainFrame;
         applyButton = new JButton(speaker.speak("Apply"));
         sortByLabel = new JLabel(speaker.speak("Sort by"));
         reversedSortLabel = new JLabel(speaker.speak("Reverse sorting"));
@@ -93,10 +95,12 @@ public class SortPanel extends JPanel implements ActionListener {
             var isReversedSort = reversedSortBox.isSelected();
             store.setSortItem(sortItem);
             store.setReversedSort(isReversedSort);
+            mainFrame.refresh();
         }
         if (e.getSource() == findButton) {
             var filterItem = filterTextFiled.getText();
             store.setFilterItem(filterItem);
+            mainFrame.refresh();
         }
     }
 }

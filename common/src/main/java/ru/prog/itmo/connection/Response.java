@@ -8,6 +8,12 @@ public class Response<T> implements Serializable {
     private boolean notAuthorized;
     private String accessToken;
     private String refreshToken;
+    private boolean isUpdates = false;
+
+    public Response(T data, boolean isUpdates) {
+        this.data = data;
+        this.isUpdates = isUpdates;
+    }
 
     public Response(T data) {
         this.data = data;
@@ -55,5 +61,9 @@ public class Response<T> implements Serializable {
 
     public void setRefreshToken(String refreshToken) {
         this.refreshToken = refreshToken;
+    }
+
+    public boolean isUpdates() {
+        return isUpdates;
     }
 }

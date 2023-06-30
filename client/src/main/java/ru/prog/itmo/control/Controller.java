@@ -17,6 +17,7 @@ import ru.prog.itmo.speaker.Speaker;
 import javax.swing.*;
 import java.awt.*;
 import java.util.*;
+import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
 public class Controller {
@@ -66,6 +67,8 @@ public class Controller {
             clientState.setWorkStatus(false);
             speaker.speak(e.getMessage());
         }
+
+
     }
 
     private void initReadAndSpeak() {
@@ -78,6 +81,13 @@ public class Controller {
         connectionModule = new ConnectionModule(speaker);
         sendModule = new SendModule(connectionModule.getSocket(), connectionModule.getHost(), speaker);
         receiveModule = new ReceiveModule(connectionModule.getSocket());
+        var threadExecutor = Executors.newSingleThreadExecutor();
+        threadExecutor.submit(() -> {
+            while (true) {
+                var response = receiveModule.getNotUpdatesResponse();
+                swingApp.setHasUpdates();
+            }
+        });
     }
 
 //    private void loadTokens() throws IOException {
@@ -133,7 +143,7 @@ public class Controller {
         connect();
         var guiSpeaker = new SmartSpeaker();
         var commandManager = new CommandManager(sendModule, receiveModule, commandMap, guiSpeaker, argument);
-        startRefreshThread();
+//        startRefreshThread();
         EventQueue.invokeLater(() -> swingApp = new SwingApp(commandManager, guiSpeaker, clientState));
     }
 
@@ -264,11 +274,12 @@ public class Controller {
         refreshToken = null;
     }
 
-    public static void setLocale(String lang){
+    public static void setLocale(String lang) {
         messages = ResourceBundle.getBundle("Messages", locales.get(lang));
     }
-//
-    public static ResourceBundle messages(){
+
+    //
+    public static ResourceBundle messages() {
         if (messages == null) setLocale("russian");
         return messages;
     }
